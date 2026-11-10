@@ -1,17 +1,17 @@
 
-import re
-import urllib.parse
-import urllib.request
-import json
 from decimal import Decimal
 from pathlib import Path
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.files.base import ContentFile
+from django.core.files import File
 from django.core.management.base import BaseCommand, CommandError
 
 from drones.models import Category, Drone
 
+
+# Фотографії збережені в проєкті та не потребують інтернету.
+# Назви файлів відповідають фотографіям, вибраним у Django Admin.
 
 DRONES = [
     {
@@ -20,6 +20,7 @@ DRONES = [
         "price": "799.00",
         "flight_time": 34,
         "range_km": 10,
+        "image": "djimini4pro.jpg",
         "description": (
             "Компактний дрон для аерозйомки з камерою 4K, "
             "всенаправленим виявленням перешкод та інтелектуальними "
@@ -32,6 +33,7 @@ DRONES = [
         "price": "1099.00",
         "flight_time": 45,
         "range_km": 10,
+        "image": "djiair3s.jpg",
         "description": (
             "Потужний дрон із подвійною камерою, основним "
             "1-дюймовим сенсором та вдосконаленою системою "
@@ -44,6 +46,7 @@ DRONES = [
         "price": "1249.00",
         "flight_time": 40,
         "range_km": 12,
+        "image": "7_550x.webp",
         "description": (
             "Складаний дрон із 1-дюймовим CMOS-сенсором, "
             "регульованою діафрагмою та можливістю зйомки "
@@ -56,6 +59,7 @@ DRONES = [
         "price": "4500.00",
         "flight_time": 32,
         "range_km": None,
+        "image": "уцауцацуа.jpeg",
         "description": (
             "Професійний дрон із підтримкою 4G, "
             "48-мегапіксельною камерою та можливостями "
@@ -68,6 +72,7 @@ DRONES = [
         "price": "1099.00",
         "flight_time": 27,
         "range_km": 6,
+        "image": "кмкмк.webp",
         "description": (
             "Автономний дрон із комп'ютерним зором, "
             "інтелектуальним стеженням за об'єктами "
@@ -80,6 +85,7 @@ DRONES = [
         "price": "699.00",
         "flight_time": 16,
         "range_km": 1,
+        "image": "ккака.jpeg",
         "description": (
             "Компактна літаюча камера для персональної "
             "відеозйомки з автоматичними режимами "
@@ -92,6 +98,7 @@ DRONES = [
         "price": "349.00",
         "flight_time": 32,
         "range_km": 6,
+        "image": "23у23у.jpeg",
         "description": (
             "Легкий складаний дрон із камерою 4K, "
             "тривісним стабілізатором та GPS-навігацією. "
@@ -104,6 +111,7 @@ DRONES = [
         "price": "399.00",
         "flight_time": 31,
         "range_km": 9,
+        "image": "1681083926_IMG_1970482.webp",
         "description": (
             "Портативний дрон для аерозйомки з камерою 4K, "
             "GPS-навігацією та інтелектуальними "
@@ -116,6 +124,7 @@ DRONES = [
         "price": "999.00",
         "flight_time": 23,
         "range_km": 10,
+        "image": "images.jpeg",
         "description": (
             "FPV-дрон із захищеними пропелерами, "
             "ширококутною камерою 4K та підтримкою "
@@ -128,6 +137,7 @@ DRONES = [
         "price": "2199.00",
         "flight_time": 43,
         "range_km": 8,
+        "image": "djimavic3pro.jpg",
         "description": (
             "Професійний дрон із потрійною системою камер, "
             "основною камерою Hasselblad та можливістю "
@@ -137,109 +147,8 @@ DRONES = [
 ]
 
 
-def normalize(value):
-    return re.sub(r"[^a-z0-9]+", "", value.lower())
-
-
-def find_commons_photo(drone_name):
-    """
-    Search Wikimedia Commons for an exact model name.
-
-    Only accept image titles containing the full model name.
-    This avoids attaching a photograph of another drone.
-    """
-
-    api_url = "https://commons.wikimedia.org/w/api.php"
-
-    params = {
-        "action": "query",
-        "generator": "search",
-        "gsrsearch": f'filetype:bitmap "{drone_name}"',
-        "gsrnamespace": 6,
-        "gsrlimit": 20,
-        "prop": "imageinfo",
-        "iiprop": "url|mime|size",
-        "iiurlwidth": 1200,
-        "format": "json",
-    }
-
-    url = api_url + "?" + urllib.parse.urlencode(params)
-
-    request = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": (
-                "KRYLA-Educational-Django-Project/1.0 "
-                "(drone catalog image research)"
-            )
-        },
-    )
-
-    with urllib.request.urlopen(request, timeout=15) as response:
-        data = json.load(response)
-
-    pages = data.get("query", {}).get("pages", {})
-
-    expected = normalize(drone_name)
-
-    for page in pages.values():
-        title = page.get("title", "")
-        title_normalized = normalize(title)
-
-        if expected not in title_normalized:
-            continue
-
-        image_info = page.get("imageinfo", [])
-
-        if not image_info:
-            continue
-
-        info = image_info[0]
-        mime = info.get("mime", "")
-
-        if mime not in ("image/jpeg", "image/png", "image/webp"):
-            continue
-
-        image_url = info.get("thumburl") or info.get("url")
-
-        if image_url:
-            return image_url, mime
-
-    return None, None
-
-
-def download_photo(url):
-    request = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": (
-                "KRYLA-Educational-Django-Project/1.0 "
-                "(drone catalog image download)"
-            )
-        },
-    )
-
-    with urllib.request.urlopen(request, timeout=20) as response:
-        content_type = response.headers.get(
-            "Content-Type", ""
-        ).split(";")[0].strip()
-
-        if not content_type.startswith("image/"):
-            raise ValueError("URL did not return an image.")
-
-        data = response.read(8 * 1024 * 1024 + 1)
-
-        if len(data) > 8 * 1024 * 1024:
-            raise ValueError("Image exceeds the size limit.")
-
-        if not data:
-            raise ValueError("Empty image.")
-
-        return data
-
-
 class Command(BaseCommand):
-    help = "Populate the KRYLA drone catalog with 10 models."
+    help = "Populate the KRYLA drone catalog with 10 models and local photos."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -267,8 +176,36 @@ class Command(BaseCommand):
 
             if owner is None:
                 raise CommandError(
-                    "No users found. Create a user first."
+                    "No users found. Create a user first using "
+                    "'python manage.py createsuperuser'."
                 )
+
+        # Папка з фотографіями, які входять до GitHub-проєкту.
+        images_dir = (
+            Path(settings.BASE_DIR)
+            / "drones"
+            / "static"
+            / "drones"
+            / "images"
+        )
+
+        if not images_dir.is_dir():
+            raise CommandError(
+                f"Drone images directory not found: {images_dir}"
+            )
+
+        # Перевіряємо всі фотографії перед зміною бази даних.
+        missing_images = [
+            item["image"]
+            for item in DRONES
+            if not (images_dir / item["image"]).is_file()
+        ]
+
+        if missing_images:
+            raise CommandError(
+                "Missing drone images:\n"
+                + "\n".join(missing_images)
+            )
 
         category, _ = Category.objects.get_or_create(
             slug="civilian-drones",
@@ -282,7 +219,7 @@ class Command(BaseCommand):
         )
 
         created_count = 0
-        updated_count = 0
+        existing_count = 0
         photo_count = 0
 
         self.stdout.write(
@@ -299,10 +236,9 @@ class Command(BaseCommand):
 
             if existing:
                 drone = existing
-                updated_count += 1
+                existing_count += 1
 
-                # Preserve existing drone information.
-                # Only fill an empty photo below.
+                # Не змінюємо існуючі характеристики.
                 self.stdout.write(
                     f"Existing drone: {name}"
                 )
@@ -327,55 +263,41 @@ class Command(BaseCommand):
                     )
                 )
 
+            # Зберігаємо існуючі фотографії без змін,
+            # якщо відповідний файл фізично існує.
             if drone.image:
-                self.stdout.write(
-                    f"Photo already exists: {name}"
-                )
-                continue
+                try:
+                    if drone.image.storage.exists(drone.image.name):
+                        self.stdout.write(
+                            f"Photo already exists: {name}"
+                        )
+                        continue
+                except (OSError, ValueError):
+                    pass
+
+            # Беремо фотографію з локальної папки проєкту.
+            image_path = images_dir / item["image"]
 
             try:
-                image_url, mime = find_commons_photo(name)
-
-                if not image_url:
-                    self.stdout.write(
-                        self.style.WARNING(
-                            f"No verified photo found: {name}"
-                        )
+                with image_path.open("rb") as image_file:
+                    drone.image.save(
+                        item["image"],
+                        File(image_file),
+                        save=True,
                     )
-                    continue
-
-                image_bytes = download_photo(image_url)
-
-                extension = {
-                    "image/jpeg": ".jpg",
-                    "image/png": ".png",
-                    "image/webp": ".webp",
-                }.get(mime, ".jpg")
-
-                filename = (
-                    normalize(name) + extension
-                )
-
-                drone.image.save(
-                    filename,
-                    ContentFile(image_bytes),
-                    save=True,
-                )
 
                 photo_count += 1
 
                 self.stdout.write(
                     self.style.SUCCESS(
-                        f"Photo saved: {name}"
+                        f"Local photo saved: {name}"
                     )
                 )
 
-            except Exception as error:
-                self.stdout.write(
-                    self.style.WARNING(
-                        f"Photo unavailable for {name}: {error}"
-                    )
-                )
+            except (OSError, ValueError) as error:
+                raise CommandError(
+                    f"Could not save photo for {name}: {error}"
+                ) from error
 
         self.stdout.write("")
         self.stdout.write(
@@ -387,10 +309,10 @@ class Command(BaseCommand):
             f"New drones: {created_count}"
         )
         self.stdout.write(
-            f"Existing drones preserved: {updated_count}"
+            f"Existing drones preserved: {existing_count}"
         )
         self.stdout.write(
-            f"Photos downloaded: {photo_count}"
+            f"Local photos added: {photo_count}"
         )
         self.stdout.write(
             f"Total drone records: {Drone.objects.count()}"
