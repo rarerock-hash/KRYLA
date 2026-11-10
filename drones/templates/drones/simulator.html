@@ -1,0 +1,666 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRYLA | Flight Simulator PRO</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #101512;
+            --panel: #17211b;
+            --panel-light: #202e25;
+            --lime: #c6e38c;
+            --text: #edf4e9;
+            --muted: #94a597;
+            --border: rgba(198, 227, 140, 0.16);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        .topbar {
+            min-height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 16px 5%;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            color: var(--lime);
+            font-size: 25px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-decoration: none;
+        }
+
+        .top-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .top-links a {
+            color: #cbd8ca;
+            text-decoration: none;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
+        .top-links a:hover {
+            color: var(--lime);
+        }
+
+        .page {
+            max-width: 1650px;
+            margin: auto;
+            padding: 35px 4%;
+        }
+
+        .eyebrow {
+            color: var(--lime);
+            font-size: 11px;
+            letter-spacing: 3px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: clamp(30px, 4vw, 52px);
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            margin-bottom: 10px;
+        }
+
+        .intro {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .sim-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 330px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .sim-frame {
+            position: relative;
+            height: min(67vw, 650px);
+            min-height: 430px;
+            overflow: hidden;
+            background: #31483d;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+        }
+
+        #flight-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            outline: none;
+        }
+
+        .flight-top {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            right: 18px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .glass {
+            background: rgba(11, 20, 15, 0.78);
+            border: 1px solid rgba(198, 227, 140, 0.2);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: 11px;
+        }
+
+        .flight-label {
+            padding: 12px 15px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            color: var(--lime);
+            font-weight: 800;
+        }
+
+        .flight-bottom {
+            position: absolute;
+            left: 18px;
+            right: 18px;
+            bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .telemetry {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            padding: 13px 17px;
+        }
+
+        .telemetry small {
+            display: block;
+            color: #a1b2a4;
+            font-size: 9px;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .telemetry strong {
+            font-size: 18px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+        }
+
+        #flight-message {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            padding: 22px 30px;
+            width: min(85%, 350px);
+            pointer-events: none;
+        }
+
+        #flight-message strong {
+            display: block;
+            color: var(--lime);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        #flight-message span {
+            color: #d2ddd0;
+            font-size: 12px;
+        }
+
+        .control-panel {
+            padding: 22px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            max-height: 650px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #526b49 transparent;
+        }
+
+        .panel-title {
+            color: var(--lime);
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .panel-subtitle {
+            color: #f1f6ed;
+            font-size: 21px;
+            font-weight: 850;
+            margin-bottom: 22px;
+        }
+
+        .section-label {
+            display: block;
+            color: #a6b8a7;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+        }
+
+        .setting-group {
+            margin-bottom: 24px;
+        }
+
+        .segmented {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 5px;
+            background: #101813;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .segmented button {
+            border: 0;
+            border-radius: 7px;
+            background: transparent;
+            color: #a6b7a6;
+            padding: 10px 3px;
+            font-size: 10px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .segmented button.active {
+            background: var(--lime);
+            color: #142016;
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 0;
+            color: #e1ebe0;
+            font-size: 13px;
+        }
+
+        .toggle-row input {
+            accent-color: var(--lime);
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .slider-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .slider-head span {
+            color: var(--lime);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--lime);
+            cursor: pointer;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            color: #e9f3e5;
+            background: #101813;
+            border: 1px solid #3a4c3d;
+            border-radius: 9px;
+            outline: none;
+        }
+
+        .action-btn {
+            border: 0;
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .primary-btn {
+            background: var(--lime);
+            color: #132016;
+        }
+
+        .secondary-btn {
+            background: #28372b;
+            color: #e2ebdf;
+            border: 1px solid #435746;
+        }
+
+        .button-stack {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        #start-button {
+            grid-column: 1 / -1;
+        }
+
+        .controls-help {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .keys {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 22px;
+            font-size: 12px;
+            color: #c7d5c5;
+        }
+
+        kbd {
+            background: #2a3c2e;
+            color: var(--lime);
+            border-radius: 5px;
+            padding: 4px 7px;
+            font-size: 11px;
+        }
+
+        .hint {
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .photo-mode .topbar,
+        .photo-mode .page-header,
+        .photo-mode .control-panel,
+        .photo-mode .controls-help,
+        .photo-mode .flight-top,
+        .photo-mode .flight-bottom,
+        .photo-mode #flight-message {
+            display: none !important;
+        }
+
+        .photo-mode .page {
+            max-width: none;
+            padding: 0;
+        }
+
+        .photo-mode .sim-layout {
+            display: block;
+        }
+
+        .photo-mode .sim-frame {
+            height: 100vh;
+            border: 0;
+            border-radius: 0;
+        }
+
+        .photo-exit {
+            display: none;
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            z-index: 100;
+        }
+
+        .photo-mode .photo-exit {
+            display: block;
+        }
+
+        @media (max-width: 1100px) {
+            .sim-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .control-panel {
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                padding: 16px 5%;
+            }
+
+            .top-links {
+                gap: 10px;
+            }
+
+            .top-links a {
+                font-size: 11px;
+            }
+
+            .page {
+                padding: 25px 4%;
+            }
+
+            .sim-frame {
+                min-height: 400px;
+                height: 500px;
+            }
+
+            .telemetry {
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .telemetry strong {
+                font-size: 13px;
+            }
+
+            .flight-top,
+            .flight-bottom {
+                left: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<header class="topbar">
+    <a class="brand" href="{% url 'drones:home' %}">KRYLA.</a>
+
+    <nav class="top-links">
+        <a href="{% url 'drones:home' %}">HOME</a>
+        <a href="{% url 'drones:drone_list' %}">DRONE CATALOG</a>
+        <a href="{% url 'drones:my_hangar' %}">MY HANGAR</a>
+        <a href="{% url 'drones:simulator' %}" style="color:#c6e38c;">SIMULATOR PRO</a>
+    </nav>
+</header>
+
+<main class="page">
+    <div class="page-header">
+        <div class="eyebrow">KRYLA / INTERACTIVE FLIGHT EXPERIENCE</div>
+        <h1>FLIGHT SIMULATOR <span style="color:#c6e38c;">PRO.</span></h1>
+        <p class="intro">
+            Explore the world. Customize the weather. Master your flight.
+        </p>
+    </div>
+
+    <div class="sim-layout">
+        <section>
+            <div class="sim-frame">
+                <canvas id="flight-canvas"></canvas>
+
+                <div class="flight-top">
+                    <div class="glass flight-label" id="flight-status">
+                        ● SYSTEM STANDBY
+                    </div>
+                    <div class="glass flight-label" id="environment-status">
+                        ☀ GOLDEN HOUR
+                    </div>
+                </div>
+
+                <div id="flight-message" class="glass">
+                    <strong>READY FOR TAKEOFF</strong>
+                    <span>
+                        Press START FLIGHT to activate the drone.
+                        Use WASD to navigate.
+                    </span>
+                </div>
+
+                <div class="flight-bottom">
+                    <div class="glass telemetry">
+                        <div>
+                            <small>ALTITUDE</small>
+                            <strong id="altitude">0.0 M</strong>
+                        </div>
+                        <div>
+                            <small>SPEED</small>
+                            <strong id="speed">0.0</strong>
+                        </div>
+                        <div>
+                            <small>HEADING</small>
+                            <strong id="heading">000°</strong>
+                        </div>
+                    </div>
+
+                    <div class="glass flight-label" id="camera-status">
+                        CAM 01
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-help">
+                <div class="section-label">FLIGHT CONTROLS</div>
+
+                <div class="keys">
+                    <span><kbd>W A S D</kbd> Move</span>
+                    <span><kbd>Q / E</kbd> Rotate</span>
+                    <span><kbd>SPACE</kbd> Ascend</span>
+                    <span><kbd>SHIFT</kbd> Descend</span>
+                    <span><kbd>C</kbd> Camera</span>
+                    <span><kbd>R</kbd> Reset</span>
+                    <span><kbd>P</kbd> Photo Mode</span>
+                </div>
+
+                <p class="hint">
+                    Controls use physical keyboard positions and work with
+                    different language layouts. Press P again to exit Photo Mode.
+                </p>
+            </div>
+        </section>
+
+        <aside class="control-panel">
+            <div class="panel-title">KRYLA / FLIGHT CONTROL</div>
+            <div class="panel-subtitle">ENVIRONMENT SETTINGS</div>
+
+            <div class="setting-group">
+                <label class="section-label">TIME OF DAY</label>
+
+                <div class="segmented" id="time-controls">
+                    <button type="button" data-time="day">DAY</button>
+                    <button type="button" data-time="sunset" class="active">SUNSET</button>
+                    <button type="button" data-time="night">NIGHT</button>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label class="section-label">FLIGHT SPEED</label>
+
+                <div class="segmented" id="speed-controls">
+                    <button type="button" data-speed="cinematic">CINEMATIC</button>
+                    <button type="button" data-speed="normal" class="active">NORMAL</button>
+                    <button type="button" data-speed="sport">SPORT</button>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label class="section-label" for="lighting-mode">DRONE LIGHTING</label>
+
+                <select id="lighting-mode">
+                    <option value="navigation" selected>NAVIGATION — RED / GREEN / WHITE</option>
+                    <option value="cinematic">CINEMATIC — BLUE GLOW</option>
+                    <option value="off">LIGHTS OFF</option>
+                </select>
+            </div>
+
+            <div class="setting-group">
+                <label class="section-label">WEATHER EFFECTS</label>
+
+                <label class="toggle-row">
+                    Rain
+                    <input id="rain-toggle" type="checkbox">
+                </label>
+
+                <label class="toggle-row">
+                    Wind
+                    <input id="wind-toggle" type="checkbox" checked>
+                </label>
+
+                <div style="margin-top:14px;">
+                    <div class="slider-head">
+                        <label class="section-label" for="fog-slider" style="margin:0;">
+                            FOG DENSITY
+                        </label>
+                        <span id="fog-value">20%</span>
+                    </div>
+
+                    <input id="fog-slider"
+                           type="range"
+                           min="0"
+                           max="100"
+                           value="20">
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label class="section-label">VISUAL EFFECTS</label>
+
+                <label class="toggle-row">
+                    Stars at night
+                    <input id="stars-toggle" type="checkbox" checked>
+                </label>
+
+                <label class="toggle-row">
+                    Moonlight
+                    <input id="moon-toggle" type="checkbox" checked>
+                </label>
+
+                <label class="toggle-row">
+                    Fireflies
+                    <input id="particles-toggle" type="checkbox" checked>
+                </label>
+
+                <label class="toggle-row">
+                    Drone & nature sound
+                    <input id="sound-toggle" type="checkbox" checked>
+                </label>
+            </div>
+
+            <div class="button-stack">
+                <button id="start-button" class="action-btn primary-btn" type="button">
+                    START FLIGHT →
+                </button>
+
+                <button id="reset-button" class="action-btn secondary-btn" type="button">
+                    RESET
+                </button>
+
+                <button id="photo-button" class="action-btn secondary-btn" type="button">
+                    PHOTO MODE
+                </button>
+            </div>
+
+            <p class="hint">
+                Switch between daylight, golden hour and night.
+                Adjust flight speed and environmental effects in real time.
+            </p>
+        </aside>
+    </div>
+</main>
+
+<button id="photo-exit"
+        class="action-btn primary-btn photo-exit"
+        type="button">
+    EXIT PHOTO MODE
+</button>
+
+<script type="module" src="{% static 'drones/js/simulator.js' %}"></script>
+</body>
+</html>

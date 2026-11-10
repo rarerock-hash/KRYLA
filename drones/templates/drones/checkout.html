@@ -1,0 +1,765 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформлення замовлення | KRYLA</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+        :root {
+            --bg: #101512;
+            --surface: #1a231c;
+            --border: #39483c;
+            --accent: #c6e38c;
+            --muted: #9baa9b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: #f4f1e8;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background: #171e19;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-brand {
+            color: var(--accent) !important;
+            font-weight: 900;
+            letter-spacing: 3px;
+        }
+
+        .navbar .nav-link {
+            color: #dce5d6;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar .nav-link.active {
+            color: var(--accent);
+        }
+
+        .accent {
+            color: var(--accent);
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .eyebrow {
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 3px;
+        }
+
+        .checkout-hero {
+            padding: 75px 0 65px;
+            background: linear-gradient(
+                135deg,
+                #293b2c,
+                #101512 75%
+            );
+            border-bottom: 1px solid var(--border);
+        }
+
+        .checkout-hero h1 {
+            font-size: clamp(2.8rem, 7vw, 5.5rem);
+            font-weight: 900;
+            letter-spacing: -3px;
+        }
+
+        .checkout-hero .lead {
+            max-width: 700px;
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .step.active {
+            color: var(--accent);
+        }
+
+        .step.active .step-number {
+            color: #101512;
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .step-line {
+            width: 35px;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .section-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+        }
+
+        .section-heading {
+            font-size: 25px;
+            font-weight: 900;
+        }
+
+        .section-divider {
+            border-color: var(--border);
+            opacity: 1;
+            margin: 25px 0;
+        }
+
+        .form-label {
+            color: #dce5d6;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 9px;
+        }
+
+        .form-control {
+            background: #111a13;
+            border: 1px solid #425344;
+            color: #f4f1e8;
+            border-radius: 6px;
+            padding: 14px 15px;
+            font-size: 14px;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .form-control:focus {
+            background: #111a13;
+            color: #ffffff;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(198, 227, 140, .12);
+        }
+
+        .form-control::placeholder {
+            color: #788b79;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        .field-error {
+            color: #f0a7a7;
+            font-size: 12px;
+            margin-top: 7px;
+        }
+
+        .form-errors {
+            background: #3a2424;
+            border: 1px solid #875151;
+            border-radius: 7px;
+            padding: 15px 18px;
+            color: #ffd4d4;
+            margin-bottom: 25px;
+        }
+
+        .order-panel {
+            background: #1e2b21;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            position: sticky;
+            top: 25px;
+        }
+
+        .order-item {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-image {
+            width: 80px;
+            height: 76px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border-radius: 6px;
+            background: #293b2c;
+        }
+
+        .order-placeholder {
+            width: 80px;
+            height: 76px;
+            flex-shrink: 0;
+            border-radius: 6px;
+            background: #293b2c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .order-item-name {
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .order-item-meta {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .order-item-price {
+            color: var(--accent);
+            font-weight: 900;
+            font-size: 15px;
+            white-space: nowrap;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .summary-total {
+            color: var(--accent);
+            font-size: clamp(28px, 4vw, 39px);
+            font-weight: 900;
+            overflow-wrap: anywhere;
+        }
+
+        .btn-kryla {
+            background: var(--accent);
+            color: #101512;
+            border: none;
+            border-radius: 6px;
+            font-weight: 900;
+            padding: 16px 20px;
+            letter-spacing: .6px;
+            transition: background .2s, transform .2s;
+        }
+
+        .btn-kryla:hover {
+            background: #e0f5b2;
+            color: #101512;
+            transform: translateY(-2px);
+        }
+
+        .btn-back {
+            color: #dce5d6;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px 20px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: border-color .2s, color .2s;
+        }
+
+        .btn-back:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .security-note {
+            background: #243126;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 15px;
+            color: #c6d1c1;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .checkout-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .checkout-info-icon {
+            color: var(--accent);
+            font-size: 20px;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        @media (max-width: 991px) {
+            .order-panel {
+                position: static;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .checkout-hero {
+                padding: 55px 0;
+            }
+
+            .section-card {
+                padding: 22px;
+            }
+
+            .order-panel {
+                padding: 22px;
+            }
+
+            .step-line {
+                width: 15px;
+            }
+
+            .step {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ==========================================
+     NAVIGATION
+========================================== -->
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container py-2">
+
+        <a class="navbar-brand" href="{% url 'drones:home' %}">
+            KRYLA / КРИЛА
+        </a>
+
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#checkoutNavbar"
+            aria-controls="checkoutNavbar"
+            aria-expanded="false"
+            aria-label="Відкрити меню"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="checkoutNavbar">
+            <div class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+
+                <a class="nav-link" href="{% url 'drones:home' %}">
+                    Головна
+                </a>
+
+                <a class="nav-link" href="{% url 'drones:drone_list' %}">
+                    Каталог
+                </a>
+
+                <a class="nav-link" href="{% url 'drones:my_hangar' %}">
+                    Мій ангар
+                </a>
+
+                <a class="nav-link active" href="{% url 'drones:my_hangar' %}#shopping-cart">
+                    🛒 Кошик
+                </a>
+
+                <span class="small" style="color: var(--accent);">
+                    👤 {{ user.username }}
+                </span>
+
+                <form method="post" action="{% url 'drones:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-light btn-sm">
+                        Вийти
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ==========================================
+     HERO
+========================================== -->
+
+<header class="checkout-hero">
+    <div class="container">
+
+        <p class="eyebrow mb-3">
+            KRYLA / PURCHASE SYSTEM / 004
+        </p>
+
+        <h1>
+            SECURE <span class="accent">CHECKOUT.</span>
+        </h1>
+
+        <p class="lead text-white-50 mt-3">
+            Завершальний етап оформлення замовлення.
+            Перевір обрані дрони та заповни дані для доставки.
+        </p>
+
+        <div class="step-indicator">
+
+            <div class="step">
+                <span class="step-number">✓</span>
+                <span>КОШИК</span>
+            </div>
+
+            <span class="step-line"></span>
+
+            <div class="step active">
+                <span class="step-number">02</span>
+                <span>ОФОРМЛЕННЯ</span>
+            </div>
+
+            <span class="step-line"></span>
+
+            <div class="step">
+                <span class="step-number">03</span>
+                <span>ПІДТВЕРДЖЕННЯ</span>
+            </div>
+
+        </div>
+
+    </div>
+</header>
+
+<!-- ==========================================
+     CHECKOUT CONTENT
+========================================== -->
+
+<main class="container py-5">
+
+    <form method="post" action="{% url 'drones:checkout' %}" id="checkout-form">
+        {% csrf_token %}
+
+        <div class="row g-4 align-items-start">
+
+            <!-- CUSTOMER DETAILS -->
+
+            <div class="col-lg-7">
+
+                <section class="section-card">
+
+                    <p class="eyebrow mb-2">
+                        CUSTOMER INFORMATION
+                    </p>
+
+                    <h2 class="section-heading mb-2">
+                        Дані покупця
+                    </h2>
+
+                    <p class="muted small mb-0">
+                        Заповни контактну інформацію для оформлення замовлення.
+                    </p>
+
+                    <hr class="section-divider">
+
+                    {% if form.non_field_errors %}
+                        <div class="form-errors" role="alert">
+                            {% for error in form.non_field_errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="row g-4">
+
+                        <div class="col-12">
+                            <label for="{{ form.full_name.id_for_label }}"
+                                   class="form-label">
+                                ІМ'Я ТА ПРІЗВИЩЕ *
+                            </label>
+
+                            {{ form.full_name }}
+
+                            {% for error in form.full_name.errors %}
+                                <div class="field-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.email.id_for_label }}"
+                                   class="form-label">
+                                EMAIL *
+                            </label>
+
+                            {{ form.email }}
+
+                            {% for error in form.email.errors %}
+                                <div class="field-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.phone.id_for_label }}"
+                                   class="form-label">
+                                ТЕЛЕФОН *
+                            </label>
+
+                            {{ form.phone }}
+
+                            {% for error in form.phone.errors %}
+                                <div class="field-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <hr class="section-divider">
+
+                    <p class="eyebrow mb-2">
+                        DELIVERY INFORMATION
+                    </p>
+
+                    <h3 class="fw-bold fs-5 mb-4">
+                        Адреса доставки
+                    </h3>
+
+                    <div class="row g-4">
+
+                        <div class="col-md-5">
+                            <label for="{{ form.city.id_for_label }}"
+                                   class="form-label">
+                                МІСТО *
+                            </label>
+
+                            {{ form.city }}
+
+                            {% for error in form.city.errors %}
+                                <div class="field-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="col-md-7">
+                            <label for="{{ form.address.id_for_label }}"
+                                   class="form-label">
+                                АДРЕСА ДОСТАВКИ *
+                            </label>
+
+                            {{ form.address }}
+
+                            {% for error in form.address.errors %}
+                                <div class="field-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="col-12">
+                            <label for="{{ form.comment.id_for_label }}"
+                                   class="form-label">
+                                КОМЕНТАР ДО ЗАМОВЛЕННЯ
+                            </label>
+
+                            {{ form.comment }}
+
+                            {% for error in form.comment.errors %}
+                                <div class="field-error">{{ error }}</div>
+                            {% endfor %}
+
+                            <p class="muted small mt-2 mb-0">
+                                Необов'язкове поле.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <div class="section-card mt-4">
+
+                    <p class="eyebrow mb-3">
+                        ORDER INFORMATION
+                    </p>
+
+                    <div class="checkout-info">
+                        <span class="checkout-info-icon">ⓘ</span>
+                        <div>
+                            <strong class="text-white">
+                                Як працює оформлення?
+                            </strong>
+                            <p class="mb-0 mt-1">
+                                Після підтвердження замовлення система
+                                KRYLA збереже інформацію про покупку.
+                                Онлайн-оплата на цьому етапі не проводиться.
+                                Деталі доставки та оплати уточнюються окремо.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <a href="{% url 'drones:my_hangar' %}#shopping-cart"
+                   class="btn-back d-inline-block mt-4">
+                    ← ПОВЕРНУТИСЯ ДО КОШИКА
+                </a>
+
+            </div>
+
+            <!-- ORDER SUMMARY -->
+
+            <div class="col-lg-5">
+
+                <aside class="order-panel">
+
+                    <p class="eyebrow mb-2">
+                        YOUR ORDER
+                    </p>
+
+                    <h2 class="section-heading mb-2">
+                        Твоє замовлення
+                    </h2>
+
+                    <p class="muted small mb-3">
+                        Перевір товари перед підтвердженням.
+                    </p>
+
+                    {% for item in cart_items %}
+
+                        <div class="order-item">
+
+                            {% if item.drone.image %}
+                                <img
+                                    src="{{ item.drone.image.url }}"
+                                    alt="{{ item.drone.name }}"
+                                    class="order-image"
+                                >
+                            {% else %}
+                                <div class="order-placeholder">🚁</div>
+                            {% endif %}
+
+                            <div class="flex-grow-1">
+
+                                <div class="order-item-name">
+                                    {{ item.drone.name }}
+                                </div>
+
+                                <div class="order-item-meta">
+                                    {{ item.drone.manufacturer }}
+                                </div>
+
+                                <div class="order-item-meta mt-1">
+                                    {{ item.quantity }} шт. × €{{ item.drone.price }}
+                                </div>
+
+                            </div>
+
+                            <div class="order-item-price">
+                                €{{ item.total_price }}
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                    <div class="mt-3">
+
+                        <div class="summary-row">
+                            <span class="muted">
+                                Вартість товарів
+                            </span>
+
+                            <strong>
+                                €{{ cart_total }}
+                            </strong>
+                        </div>
+
+                        <div class="summary-row">
+                            <span class="muted">
+                                Доставка
+                            </span>
+
+                            <strong>
+                                Уточнюється
+                            </strong>
+                        </div>
+
+                    </div>
+
+                    <p class="eyebrow mt-4 mb-1">
+                        TOTAL AMOUNT / EUR
+                    </p>
+
+                    <div class="summary-total mb-4">
+                        €{{ cart_total }}
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="btn btn-kryla w-100"
+                    >
+                        ✓ ПІДТВЕРДИТИ ЗАМОВЛЕННЯ
+                    </button>
+
+                    <div class="security-note mt-3">
+                        🔒 Замовлення зберігається у твоєму
+                        обліковому записі KRYLA.
+                        Підтвердження не списує кошти.
+                    </div>
+
+                </aside>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</main>
+
+<!-- ==========================================
+     FOOTER
+========================================== -->
+
+<footer class="py-4 mt-5">
+    <div class="container d-flex justify-content-between flex-wrap gap-3">
+        <span>© 2026 KRYLA — Ukrainian Drone Technology</span>
+        <span>SECURE CHECKOUT / PURCHASE SYSTEM</span>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

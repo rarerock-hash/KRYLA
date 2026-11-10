@@ -1,0 +1,421 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>KRYLA | Ukrainian Drone Technology</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+        :root {
+            --bg: #101512;
+            --surface: #171e19;
+            --border: #39483c;
+            --accent: #c6e38c;
+            --text: #f4f1e8;
+            --muted: #9baa9b;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-brand {
+            color: #d8e8a4 !important;
+            font-weight: 900;
+            letter-spacing: 3px;
+        }
+
+        .navbar .nav-link {
+            color: #dce5d6;
+            transition: color 0.2s;
+        }
+
+        .navbar .nav-link:hover {
+            color: var(--accent);
+        }
+
+        .navbar-text {
+            color: var(--accent);
+            font-size: 14px;
+        }
+
+        .hero {
+            min-height: 85vh;
+            display: flex;
+            align-items: center;
+            background:
+                radial-gradient(
+                    circle at 80% 40%,
+                    #304431 0%,
+                    #101512 60%
+                );
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 900;
+            letter-spacing: -4px;
+            line-height: 1.05;
+        }
+
+        .accent {
+            color: var(--accent);
+        }
+
+        .btn-kryla {
+            background: var(--accent);
+            color: var(--bg);
+            font-weight: 800;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 24px;
+            transition: all 0.2s;
+        }
+
+        .btn-kryla:hover {
+            background: #e0f5b2;
+            color: var(--bg);
+            transform: translateY(-2px);
+        }
+
+        .tagline {
+            color: var(--muted);
+            letter-spacing: 3px;
+            font-size: 12px;
+        }
+
+        .section-dark {
+            background: #151d17;
+            border-top: 1px solid var(--border);
+        }
+
+        .feature-card {
+            height: 100%;
+            padding: 30px;
+            background: #1a231c;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .feature-number {
+            color: var(--accent);
+            font-size: 13px;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        @media (max-width: 767px) {
+            .hero {
+                min-height: 70vh;
+                padding: 70px 0;
+            }
+
+            .hero h1 {
+                letter-spacing: -2px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container py-2">
+
+        <a class="navbar-brand" href="{% url 'drones:home' %}">
+            KRYLA / КРИЛА
+        </a>
+
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mainNavbar"
+            aria-controls="mainNavbar"
+            aria-expanded="false"
+            aria-label="Відкрити меню"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+
+            <div class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+
+                <a class="nav-link" href="{% url 'drones:home' %}">
+                    Головна
+                </a>
+
+                <a class="nav-link" href="{% url 'drones:drone_list' %}">
+                    Каталог
+                </a>
+
+                <!-- ANALYTICS BUTTON -->
+                <a class="nav-link" href="{% url 'drones:analytics' %}">
+                    Аналітика
+                </a>
+
+                <!-- SIMULATOR BUTTON -->
+                <a
+                    class="nav-link"
+                    href="{% url 'drones:simulator' %}"
+                    style="color: #c6e38c; font-weight: 700;"
+                >
+                    🚁 Симулятор
+                </a>
+
+                {% if user.is_authenticated %}
+
+                    <!-- MY PROFILE BUTTON -->
+                    <a
+                        class="nav-link"
+                        href="{% url 'drones:profile' %}"
+                        style="color: #c6e38c; font-weight: 700;"
+                    >
+                        👤 Мій профіль
+                    </a>
+
+                    <form
+                        method="post"
+                        action="{% url 'drones:logout' %}"
+                        class="m-0"
+                    >
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="btn btn-outline-light btn-sm"
+                        >
+                            Вийти
+                        </button>
+                    </form>
+
+                {% else %}
+
+                    <a class="nav-link" href="{% url 'drones:login' %}">
+                        Увійти
+                    </a>
+
+                    <a
+                        class="btn btn-kryla btn-sm"
+                        href="{% url 'drones:register' %}"
+                    >
+                        Реєстрація
+                    </a>
+
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<!-- HERO SECTION -->
+
+<main class="hero">
+    <div class="container">
+
+        <p class="tagline mb-4">
+            ENGINEERED FOR THE SKY / 001
+        </p>
+
+        <h1>
+            THE FUTURE<br>
+            HAS <span class="accent">WINGS.</span>
+        </h1>
+
+        <p class="lead mt-4 mb-4 text-white-50">
+            Досліджуй технології безпілотної авіації.
+            Від цивільних дронів до інтерактивного симулятора польоту.
+        </p>
+
+        <div class="d-flex flex-wrap gap-3">
+
+            <a
+                href="{% url 'drones:drone_list' %}"
+                class="btn btn-kryla"
+            >
+                EXPLORE DRONES →
+            </a>
+
+            <a
+                href="#about"
+                class="btn btn-outline-light px-4 py-3"
+            >
+                ABOUT KRYLA
+            </a>
+
+        </div>
+    </div>
+</main>
+
+
+<!-- ABOUT SECTION -->
+
+<section id="about" class="section-dark py-5">
+    <div class="container py-4">
+
+        <p class="tagline">
+            ABOUT THE PROJECT / 002
+        </p>
+
+        <h2 class="display-5 fw-bold mb-4">
+            Технології, що
+            <span class="accent">відкривають небо.</span>
+        </h2>
+
+        <p class="text-white-50 col-lg-8">
+            KRYLA — навчальна платформа, присвячена
+            безпілотним технологіям, цивільним дронам
+            та майбутньому авіації.
+        </p>
+
+        <div class="row g-4 mt-4">
+
+            <!-- CATALOG -->
+
+            <div class="col-md-4">
+                <div class="feature-card">
+
+                    <p class="feature-number">01 / DISCOVER</p>
+
+                    <h3 class="h4 fw-bold">
+                        Каталог дронів
+                    </h3>
+
+                    <p class="text-white-50">
+                        Переглядай характеристики, порівнюй
+                        технології та відкривай нові моделі.
+                    </p>
+
+                    <a
+                        href="{% url 'drones:drone_list' %}"
+                        class="text-decoration-none"
+                        style="color: #c6e38c;"
+                    >
+                        Переглянути каталог →
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- COMMUNITY -->
+
+            <div class="col-md-4">
+                <div class="feature-card">
+
+                    <p class="feature-number">02 / COMMUNITY</p>
+
+                    <h3 class="h4 fw-bold">
+                        Спільнота KRYLA
+                    </h3>
+
+                    <p class="text-white-50">
+                        Створюй обліковий запис і керуй
+                        власними оголошеннями про дрони.
+                    </p>
+
+                    {% if user.is_authenticated %}
+
+                        <span style="color: #c6e38c;">
+                            Вітаємо, {{ user.username }}!
+                        </span>
+
+                    {% else %}
+
+                        <a
+                            href="{% url 'drones:register' %}"
+                            class="text-decoration-none"
+                            style="color: #c6e38c;"
+                        >
+                            Приєднатися →
+                        </a>
+
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <!-- FLIGHT SIMULATOR -->
+
+            <div class="col-md-4">
+                <div class="feature-card">
+
+                    <p class="feature-number">03 / SIMULATION</p>
+
+                    <h3 class="h4 fw-bold">
+                        Flight Simulator
+                    </h3>
+
+                    <p class="text-white-50">
+                        Інтерактивний симулятор польоту
+                        цивільного дрона — наступний етап KRYLA.
+                    </p>
+
+                    <a
+                        href="{% url 'drones:simulator' %}"
+                        class="btn btn-kryla"
+                    >
+                        ЗАПУСТИТИ СИМУЛЯТОР →
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- FOOTER -->
+
+<footer class="py-4">
+    <div class="container d-flex justify-content-between flex-wrap gap-3">
+
+        <span>
+            © 2026 KRYLA — Ukrainian Drone Technology
+        </span>
+
+        <span>
+            EDUCATIONAL PROJECT / MADE WITH DJANGO
+        </span>
+
+    </div>
+</footer>
+
+
+<!-- BOOTSTRAP JAVASCRIPT -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

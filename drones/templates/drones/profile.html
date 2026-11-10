@@ -1,0 +1,581 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY PROFILE | KRYLA</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #101512;
+            --surface: #171e19;
+            --card: #1a231c;
+            --border: #39483c;
+            --accent: #c6e38c;
+            --text: #f4f1e8;
+            --muted: #9baa9b;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .navbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-brand {
+            color: #d8e8a4 !important;
+            font-weight: 900;
+            letter-spacing: 3px;
+        }
+
+        .navbar .nav-link {
+            color: #dce5d6;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar .nav-link.active {
+            color: var(--accent);
+        }
+
+        .navbar-text {
+            color: var(--accent);
+            font-size: 14px;
+        }
+
+        .tagline {
+            color: var(--muted);
+            letter-spacing: 3px;
+            font-size: 12px;
+        }
+
+        .accent {
+            color: var(--accent);
+        }
+
+        .profile-hero {
+            padding: 75px 0 55px;
+            background: radial-gradient(
+                circle at 85% 30%,
+                #304431 0%,
+                #101512 65%
+            );
+            border-bottom: 1px solid var(--border);
+        }
+
+        .profile-title {
+            font-size: clamp(3rem, 7vw, 6rem);
+            font-weight: 900;
+            letter-spacing: -4px;
+            line-height: 1;
+        }
+
+        .profile-subtitle {
+            color: var(--muted);
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .profile-avatar {
+            width: 105px;
+            height: 105px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent);
+            color: var(--bg);
+            border-radius: 12px;
+            font-size: 45px;
+            font-weight: 900;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, .25);
+        }
+
+        .profile-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 30px;
+            height: 100%;
+            transition: .2s;
+        }
+
+        .profile-card:hover {
+            border-color: var(--accent);
+        }
+
+        .card-label {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .stat-number {
+            font-size: 56px;
+            font-weight: 900;
+            color: var(--accent);
+            line-height: 1.2;
+        }
+
+        .btn-kryla {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--bg);
+            font-weight: 800;
+            border: none;
+            border-radius: 4px;
+            padding: 13px 23px;
+            transition: .2s;
+        }
+
+        .btn-kryla:hover {
+            background: #e0f5b2;
+            color: var(--bg);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-kryla {
+            display: inline-block;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 13px 23px;
+            border-radius: 4px;
+            font-weight: 700;
+            transition: .2s;
+        }
+
+        .btn-outline-kryla:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 900;
+        }
+
+        .drone-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 19px 22px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .drone-name {
+            font-size: 17px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .drone-meta {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .status {
+            font-size: 11px;
+            letter-spacing: 1px;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .empty-state {
+            text-align: center;
+            background: var(--card);
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+            padding: 50px 25px;
+        }
+
+        /* NEW: ORDER HISTORY CARD */
+
+        .orders-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 25px;
+            padding: 30px;
+            background: linear-gradient(
+                120deg,
+                #233527 0%,
+                #1a231c 75%
+            );
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            transition: border-color .2s;
+        }
+
+        .orders-card:hover {
+            border-color: var(--accent);
+        }
+
+        .orders-card-description {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+            max-width: 520px;
+            margin-bottom: 0;
+        }
+
+        footer {
+            margin-top: 80px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            padding: 28px 0;
+        }
+
+        @media (max-width: 767px) {
+            .profile-hero {
+                padding: 55px 0 40px;
+            }
+
+            .profile-title {
+                letter-spacing: -2px;
+            }
+
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 34px;
+            }
+
+            .drone-item {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .orders-card {
+                padding: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container py-2">
+
+        <a class="navbar-brand" href="{% url 'drones:home' %}">
+            KRYLA / КРИЛА
+        </a>
+
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#profileNavbar"
+            aria-controls="profileNavbar"
+            aria-expanded="false"
+            aria-label="Відкрити меню"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="profileNavbar">
+            <div class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+
+                <a class="nav-link" href="{% url 'drones:home' %}">
+                    Головна
+                </a>
+
+                <a class="nav-link" href="{% url 'drones:drone_list' %}">
+                    Каталог
+                </a>
+
+                <a class="nav-link" href="{% url 'drones:my_hangar' %}">
+                    Мій ангар
+                </a>
+
+                <a class="nav-link" href="{% url 'drones:simulator' %}">
+                    🚁 Симулятор
+                </a>
+
+                <a class="nav-link" href="{% url 'drones:my_orders' %}">
+                    Мої замовлення
+                </a>
+
+                <a class="nav-link active" href="{% url 'drones:profile' %}">
+                    Мій профіль
+                </a>
+
+                <form method="post" action="{% url 'drones:logout' %}" class="m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-light btn-sm">
+                        Вийти
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- PROFILE HERO -->
+
+<section class="profile-hero">
+    <div class="container">
+
+        <p class="tagline mb-4">
+            KRYLA / PERSONAL ACCESS / 004
+        </p>
+
+        <div class="row align-items-center g-4">
+
+            <div class="col-md-auto">
+                <div class="profile-avatar">
+                    {{ profile_user.username|first|upper }}
+                </div>
+            </div>
+
+            <div class="col-md">
+                <h1 class="profile-title">
+                    MY <span class="accent">PROFILE.</span>
+                </h1>
+
+                <p class="profile-subtitle">
+                    Вітаємо в системі, {{ profile_user.username }}.
+                    Твій персональний простір KRYLA.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- PROFILE CONTENT -->
+
+<main class="container py-5">
+
+    <div class="row g-4 mb-5">
+
+        <!-- ACCOUNT INFORMATION -->
+
+        <div class="col-lg-7">
+            <div class="profile-card">
+
+                <p class="card-label mb-4">
+                    01 / ACCOUNT INFORMATION
+                </p>
+
+                <h2 class="section-title mb-4">
+                    Особисті дані
+                </h2>
+
+                <p class="card-label mb-2">USERNAME</p>
+                <p class="fs-5 fw-bold">
+                    {{ profile_user.username }}
+                </p>
+
+                <hr style="border-color: #39483c;">
+
+                <p class="card-label mb-2">EMAIL</p>
+                <p class="fs-6">
+                    {% if profile_user.email %}
+                        {{ profile_user.email }}
+                    {% else %}
+                        Не вказано
+                    {% endif %}
+                </p>
+
+                <hr style="border-color: #39483c;">
+
+                <p class="card-label mb-2">MEMBER SINCE</p>
+                <p class="fs-6">
+                    {{ profile_user.date_joined|date:"d.m.Y" }}
+                </p>
+
+                <hr style="border-color: #39483c;">
+
+                <p class="card-label mb-2">ACCOUNT STATUS</p>
+                <p class="status mb-0">
+                    ● ACTIVE / VERIFIED SESSION
+                </p>
+
+            </div>
+        </div>
+
+        <!-- HANGAR STATISTICS -->
+
+        <div class="col-lg-5">
+            <div class="profile-card">
+
+                <p class="card-label mb-4">
+                    02 / HANGAR STATISTICS
+                </p>
+
+                <h2 class="section-title mb-3">
+                    Мій ангар
+                </h2>
+
+                <div class="stat-number">
+                    {{ hangar_count }}
+                </div>
+
+                <p class="text-white-50 mb-4">
+                    Дронів у твоїй колекції
+                </p>
+
+                <a href="{% url 'drones:my_hangar' %}" class="btn-kryla">
+                    ВІДКРИТИ АНГАР →
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RECENT DRONES -->
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+        <div>
+            <p class="tagline mb-2">
+                03 / YOUR COLLECTION
+            </p>
+
+            <h2 class="section-title mb-0">
+                Останні дрони
+            </h2>
+        </div>
+
+        <a href="{% url 'drones:my_hangar' %}" class="btn-outline-kryla">
+            УСІ ДРОНИ →
+        </a>
+
+    </div>
+
+    {% for item in recent_items %}
+
+        <div class="drone-item">
+
+            <div>
+                <h3 class="drone-name">
+                    {{ item.drone.name }}
+                </h3>
+
+                <p class="drone-meta mb-0">
+                    {{ item.drone.manufacturer }}
+                    {% if item.drone.category %}
+                        / {{ item.drone.category.name }}
+                    {% endif %}
+                </p>
+            </div>
+
+            <span class="status">
+                ● IN HANGAR
+            </span>
+
+        </div>
+
+    {% empty %}
+
+        <div class="empty-state">
+            <h3 class="fw-bold mb-3">
+                Твій ангар поки порожній
+            </h3>
+
+            <p class="text-white-50 mb-4">
+                Досліджуй каталог і додай свій перший дрон.
+            </p>
+
+            <a href="{% url 'drones:drone_list' %}" class="btn-kryla">
+                ПЕРЕЙТИ ДО КАТАЛОГУ →
+            </a>
+        </div>
+
+    {% endfor %}
+
+    <!-- NEW: MY ORDERS -->
+
+    <section class="mt-5">
+
+        <p class="tagline mb-3">
+            04 / PURCHASE HISTORY
+        </p>
+
+        <div class="orders-card">
+
+            <div>
+                <h2 class="section-title mb-3">
+                    MY <span class="accent">ORDERS.</span>
+                </h2>
+
+                <p class="orders-card-description">
+                    Переглядай історію покупок, перевіряй статуси
+                    замовлень та відкривай детальну інформацію
+                    про кожне замовлення.
+                </p>
+            </div>
+
+            <a href="{% url 'drones:my_orders' %}" class="btn-kryla">
+                МОЇ ЗАМОВЛЕННЯ →
+            </a>
+
+        </div>
+
+    </section>
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="row g-3 mt-5">
+
+        <div class="col-md-6">
+            <a href="{% url 'drones:drone_list' %}" class="btn-outline-kryla w-100 text-center">
+                EXPLORE DRONES →
+            </a>
+        </div>
+
+        <div class="col-md-6">
+            <a href="{% url 'drones:simulator' %}" class="btn-kryla w-100 text-center">
+                LAUNCH SIMULATOR ↗
+            </a>
+        </div>
+
+    </div>
+
+</main>
+
+<!-- FOOTER -->
+
+<footer>
+    <div class="container d-flex justify-content-between flex-wrap gap-3">
+
+        <span>
+            © 2026 KRYLA — Ukrainian Drone Technology
+        </span>
+
+        <span>
+            PERSONAL DASHBOARD / MADE WITH DJANGO
+        </span>
+
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

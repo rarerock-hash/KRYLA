@@ -1,0 +1,1020 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ANALYTICS | KRYLA</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #101512;
+            --surface: #171e19;
+            --card: #1a231c;
+            --border: #39483c;
+            --accent: #c6e38c;
+            --text: #f4f1e8;
+            --muted: #9baa9b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .navbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-brand {
+            color: #d8e8a4 !important;
+            font-weight: 900;
+            letter-spacing: 3px;
+        }
+
+        .navbar .nav-link {
+            color: #dce5d6;
+            transition: color .2s;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar .nav-link.active {
+            color: var(--accent);
+        }
+
+        .tagline {
+            color: var(--muted);
+            letter-spacing: 3px;
+            font-size: 12px;
+        }
+
+        .accent {
+            color: var(--accent);
+        }
+
+        .hero {
+            padding: 76px 0 66px;
+            background:
+                radial-gradient(
+                    circle at 80% 30%,
+                    #304431 0%,
+                    #101512 65%
+                );
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 6.8rem);
+            font-weight: 900;
+            letter-spacing: -4px;
+            line-height: 1;
+            margin-bottom: 22px;
+        }
+
+        .hero-description {
+            color: var(--muted);
+            max-width: 660px;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent);
+            font-size: 11px;
+            letter-spacing: 2px;
+            font-weight: 800;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 12px rgba(198, 227, 140, .65);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            50% {
+                opacity: .35;
+                transform: scale(.8);
+            }
+        }
+
+        .section-label {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 28px;
+            height: 100%;
+            min-height: 188px;
+            transition: border-color .2s, transform .2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .stat-card::after {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 1px solid rgba(198, 227, 140, .09);
+            border-radius: 50%;
+            right: -35px;
+            bottom: -45px;
+        }
+
+        .stat-number {
+            font-size: clamp(2.5rem, 5vw, 3.7rem);
+            font-weight: 900;
+            color: var(--accent);
+            letter-spacing: -2px;
+            line-height: 1.2;
+            margin: 18px 0 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .stat-unit {
+            color: var(--muted);
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .section-heading {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 900;
+            letter-spacing: -.5px;
+        }
+
+        .chart-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 28px;
+            height: 100%;
+        }
+
+        .chart-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 7px;
+        }
+
+        .chart-subtitle {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 25px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 310px;
+            width: 100%;
+        }
+
+        .empty-chart {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            color: var(--muted);
+            font-size: 14px;
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .metric-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            height: 100%;
+        }
+
+        .metric-value {
+            color: var(--text);
+            font-size: clamp(1.7rem, 3vw, 2.5rem);
+            font-weight: 900;
+            margin-top: 15px;
+            overflow-wrap: anywhere;
+        }
+
+        .metric-unit {
+            color: var(--accent);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .availability-track {
+            height: 12px;
+            border-radius: 20px;
+            background: #39483c;
+            overflow: hidden;
+        }
+
+        .availability-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 20px;
+            transition: width .7s ease;
+        }
+
+        .availability-value {
+            color: var(--accent);
+            font-size: 44px;
+            font-weight: 900;
+            letter-spacing: -2px;
+        }
+
+        .btn-kryla {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--bg);
+            font-weight: 800;
+            border: none;
+            border-radius: 4px;
+            padding: 14px 24px;
+            transition: .2s;
+        }
+
+        .btn-kryla:hover {
+            background: #e0f5b2;
+            color: var(--bg);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-kryla {
+            display: inline-block;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 14px 24px;
+            border-radius: 4px;
+            font-weight: 800;
+            transition: .2s;
+        }
+
+        .btn-outline-kryla:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .insight-panel {
+            background: linear-gradient(
+                135deg,
+                #202d22 0%,
+                #151d17 100%
+            );
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 32px;
+        }
+
+        footer {
+            margin-top: 80px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            padding: 28px 0;
+            font-size: 13px;
+        }
+
+        @media (max-width: 767px) {
+            .hero {
+                padding: 55px 0 45px;
+            }
+
+            .hero h1 {
+                letter-spacing: -2px;
+            }
+
+            .chart-card {
+                padding: 20px;
+            }
+
+            .chart-container {
+                height: 260px;
+            }
+
+            .stat-card {
+                min-height: 165px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container py-2">
+
+        <a class="navbar-brand" href="{% url 'drones:home' %}">
+            KRYLA / КРИЛА
+        </a>
+
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#analyticsNavbar"
+            aria-controls="analyticsNavbar"
+            aria-expanded="false"
+            aria-label="Відкрити меню"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="analyticsNavbar">
+            <div class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+
+                <a class="nav-link" href="{% url 'drones:home' %}">
+                    Головна
+                </a>
+
+                <a class="nav-link" href="{% url 'drones:drone_list' %}">
+                    Каталог
+                </a>
+
+                <a class="nav-link active" href="{% url 'drones:analytics' %}">
+                    Аналітика
+                </a>
+
+                <a class="nav-link" href="{% url 'drones:simulator' %}">
+                    🚁 Симулятор
+                </a>
+
+                {% if user.is_authenticated %}
+
+                    <a class="nav-link" href="{% url 'drones:profile' %}">
+                        👤 Мій профіль
+                    </a>
+
+                    <form
+                        method="post"
+                        action="{% url 'drones:logout' %}"
+                        class="m-0"
+                    >
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-light btn-sm">
+                            Вийти
+                        </button>
+                    </form>
+
+                {% else %}
+
+                    <a class="nav-link" href="{% url 'drones:login' %}">
+                        Увійти
+                    </a>
+
+                    <a
+                        class="btn btn-kryla btn-sm"
+                        href="{% url 'drones:register' %}"
+                    >
+                        Реєстрація
+                    </a>
+
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+
+<header class="hero">
+    <div class="container">
+
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <p class="tagline mb-0">
+                KRYLA / DATA INTELLIGENCE / 005
+            </p>
+
+            <div class="live-indicator">
+                <span class="live-dot"></span>
+                LIVE DATABASE METRICS
+            </div>
+        </div>
+
+        <h1>
+            DATA <span class="accent">INTELLIGENCE.</span>
+        </h1>
+
+        <p class="hero-description">
+            Аналітична панель безпілотних технологій.
+            Досліджуй статистику каталогу, порівнюй характеристики
+            та аналізуй дані цивільних дронів у реальному часі.
+        </p>
+
+        <div class="d-flex flex-wrap gap-3 mt-4">
+            <a href="#overview" class="btn-kryla">
+                EXPLORE DATA ↓
+            </a>
+
+            <a href="{% url 'drones:drone_list' %}" class="btn-outline-kryla">
+                VIEW CATALOG →
+            </a>
+        </div>
+
+    </div>
+</header>
+
+<main class="container py-5">
+
+    <!-- OVERVIEW -->
+
+    <section id="overview" class="mb-5">
+
+        <p class="tagline mb-2">
+            01 / SYSTEM OVERVIEW
+        </p>
+
+        <h2 class="section-heading mb-4">
+            Каталог у цифрах
+        </h2>
+
+        <div class="row g-3">
+
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <p class="section-label mb-0">TOTAL DRONES</p>
+                    <div class="stat-number">{{ total_drones }}</div>
+                    <p class="stat-unit mb-0">МОДЕЛЕЙ У КАТАЛОЗІ</p>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <p class="section-label mb-0">AVAILABLE</p>
+                    <div class="stat-number">{{ available_drones }}</div>
+                    <p class="stat-unit mb-0">ДОСТУПНИХ МОДЕЛЕЙ</p>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <p class="section-label mb-0">UNAVAILABLE</p>
+                    <div class="stat-number">{{ unavailable_drones }}</div>
+                    <p class="stat-unit mb-0">НЕДОСТУПНИХ МОДЕЛЕЙ</p>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="stat-card">
+                    <p class="section-label mb-0">CATEGORIES</p>
+                    <div class="stat-number">{{ total_categories }}</div>
+                    <p class="stat-unit mb-0">КАТЕГОРІЙ ДРОНІВ</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- CHARTS -->
+
+    <section class="mb-5">
+
+        <p class="tagline mb-2">
+            02 / DATA VISUALIZATION
+        </p>
+
+        <h2 class="section-heading mb-4">
+            Візуалізація даних
+        </h2>
+
+        <div class="row g-4">
+
+            <!-- CATEGORY CHART -->
+
+            <div class="col-lg-6">
+                <div class="chart-card">
+
+                    <h3 class="chart-title">
+                        Розподіл за категоріями
+                    </h3>
+
+                    <p class="chart-subtitle">
+                        Кількість моделей у кожній категорії
+                    </p>
+
+                    <div class="chart-container">
+                        {% if category_labels %}
+                            <canvas id="categoryChart" aria-label="Розподіл дронів за категоріями" role="img"></canvas>
+                        {% else %}
+                            <div class="empty-chart">
+                                Даних поки немає. Додай дрони до каталогу.
+                            </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- MANUFACTURER CHART -->
+
+            <div class="col-lg-6">
+                <div class="chart-card">
+
+                    <h3 class="chart-title">
+                        Виробники
+                    </h3>
+
+                    <p class="chart-subtitle">
+                        Топ-8 виробників за кількістю моделей
+                    </p>
+
+                    <div class="chart-container">
+                        {% if manufacturer_labels %}
+                            <canvas id="manufacturerChart" aria-label="Розподіл дронів за виробниками" role="img"></canvas>
+                        {% else %}
+                            <div class="empty-chart">
+                                Немає даних для відображення.
+                            </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- AVAILABILITY CHART -->
+
+            <div class="col-lg-6">
+                <div class="chart-card">
+
+                    <h3 class="chart-title">
+                        Доступність моделей
+                    </h3>
+
+                    <p class="chart-subtitle">
+                        Співвідношення доступних і недоступних дронів
+                    </p>
+
+                    <div class="chart-container">
+                        {% if total_drones %}
+                            <canvas id="availabilityChart" aria-label="Доступність моделей" role="img"></canvas>
+                        {% else %}
+                            <div class="empty-chart">
+                                Додай моделі, щоб побачити статистику.
+                            </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- AVAILABILITY PROGRESS -->
+
+            <div class="col-lg-6">
+                <div class="chart-card d-flex flex-column justify-content-center">
+
+                    <h3 class="chart-title">
+                        Індекс доступності
+                    </h3>
+
+                    <p class="chart-subtitle">
+                        Частка доступних моделей у каталозі
+                    </p>
+
+                    <div class="availability-value mb-3">
+                        {{ availability_percentage }}%
+                    </div>
+
+                    <div
+                        class="availability-track"
+                        role="progressbar"
+                        aria-label="Частка доступних моделей"
+                        aria-valuenow="{{ availability_percentage }}"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                    >
+                        <div
+                            class="availability-fill"
+                            style="width: {{ availability_percentage }}%;"
+                        ></div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        <span class="section-label">AVAILABLE</span>
+                        <span class="section-label">100% MAX</span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- PRICE ANALYTICS -->
+
+    <section class="mb-5">
+
+        <p class="tagline mb-2">
+            03 / FINANCIAL DATA
+        </p>
+
+        <h2 class="section-heading mb-4">
+            Аналіз вартості
+        </h2>
+
+        <div class="row g-3">
+
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <p class="section-label mb-0">
+                        AVERAGE PRICE
+                    </p>
+
+                    <div class="metric-value">
+                        €{{ average_price|floatformat:2 }}
+                    </div>
+
+                    <p class="metric-unit mb-0">
+                        СЕРЕДНЯ ВАРТІСТЬ
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <p class="section-label mb-0">
+                        MINIMUM PRICE
+                    </p>
+
+                    <div class="metric-value">
+                        €{{ minimum_price|floatformat:2 }}
+                    </div>
+
+                    <p class="metric-unit mb-0">
+                        НАЙНИЖЧА ВАРТІСТЬ
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <p class="section-label mb-0">
+                        MAXIMUM PRICE
+                    </p>
+
+                    <div class="metric-value">
+                        €{{ maximum_price|floatformat:2 }}
+                    </div>
+
+                    <p class="metric-unit mb-0">
+                        НАЙВИЩА ВАРТІСТЬ
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FLIGHT PERFORMANCE -->
+
+    <section class="mb-5">
+
+        <p class="tagline mb-2">
+            04 / FLIGHT PERFORMANCE
+        </p>
+
+        <h2 class="section-heading mb-4">
+            Льотні характеристики
+        </h2>
+
+        <div class="row g-3">
+
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <p class="section-label mb-0">
+                        AVG FLIGHT TIME
+                    </p>
+
+                    <div class="metric-value">
+                        {{ average_flight_time|floatformat:1 }}
+                        <span class="metric-unit">MIN</span>
+                    </div>
+
+                    <p class="text-white-50 small mb-0">
+                        Середня тривалість польоту
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <p class="section-label mb-0">
+                        MAX FLIGHT TIME
+                    </p>
+
+                    <div class="metric-value">
+                        {{ maximum_flight_time }}
+                        <span class="metric-unit">MIN</span>
+                    </div>
+
+                    <p class="text-white-50 small mb-0">
+                        Максимальна тривалість польоту
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <p class="section-label mb-0">
+                        AVG RANGE
+                    </p>
+
+                    <div class="metric-value">
+                        {{ average_range|floatformat:1 }}
+                        <span class="metric-unit">KM</span>
+                    </div>
+
+                    <p class="text-white-50 small mb-0">
+                        Середня дальність польоту
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FINAL PANEL -->
+
+    <section class="insight-panel">
+
+        <div class="row align-items-center g-4">
+
+            <div class="col-lg-8">
+                <p class="tagline mb-3">
+                    05 / EXPLORE THE ECOSYSTEM
+                </p>
+
+                <h2 class="section-heading mb-3">
+                    DATA DRIVES <span class="accent">INNOVATION.</span>
+                </h2>
+
+                <p class="text-white-50 mb-0">
+                    Усі показники сформовані на основі записів
+                    у базі даних KRYLA. Досліджуй каталог,
+                    порівнюй моделі та відкривай нові технології.
+                </p>
+            </div>
+
+            <div class="col-lg-4 text-lg-end">
+                <a href="{% url 'drones:drone_list' %}" class="btn-kryla">
+                    EXPLORE CATALOG →
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<!-- FOOTER -->
+
+<footer>
+    <div class="container d-flex justify-content-between flex-wrap gap-3">
+
+        <span>
+            © 2026 KRYLA — Ukrainian Drone Technology
+        </span>
+
+        <span>
+            ANALYTICS DASHBOARD / POWERED BY DJANGO
+        </span>
+
+    </div>
+</footer>
+
+<!-- SAFE DJANGO DATA FOR CHARTS -->
+
+{{ category_labels|json_script:"category-labels-data" }}
+{{ category_values|json_script:"category-values-data" }}
+{{ manufacturer_labels|json_script:"manufacturer-labels-data" }}
+{{ manufacturer_values|json_script:"manufacturer-values-data" }}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        if (typeof Chart === "undefined") {
+            console.warn("Chart.js is not available.");
+            return;
+        }
+
+        const accent = "#c6e38c";
+        const textColor = "#dce5d6";
+        const mutedColor = "#9baa9b";
+        const gridColor = "rgba(154, 170, 155, 0.12)";
+
+        const palette = [
+            "#c6e38c",
+            "#8eb69b",
+            "#6b8f71",
+            "#e0c88c",
+            "#8ca6a0",
+            "#a8b58a",
+            "#789b8b",
+            "#d6e6b5"
+        ];
+
+        function readJSON(id) {
+            const element = document.getElementById(id);
+            return element ? JSON.parse(element.textContent) : [];
+        }
+
+        const categoryLabels = readJSON("category-labels-data");
+        const categoryValues = readJSON("category-values-data");
+
+        const manufacturerLabels = readJSON("manufacturer-labels-data");
+        const manufacturerValues = readJSON("manufacturer-values-data");
+
+        Chart.defaults.color = textColor;
+        Chart.defaults.font.family = "Arial, sans-serif";
+
+        const categoryCanvas = document.getElementById("categoryChart");
+
+        if (categoryCanvas && categoryLabels.length > 0) {
+            new Chart(categoryCanvas, {
+                type: "doughnut",
+                data: {
+                    labels: categoryLabels,
+                    datasets: [{
+                        data: categoryValues,
+                        backgroundColor: categoryLabels.map(
+                            (_, index) => palette[index % palette.length]
+                        ),
+                        borderColor: "#1a231c",
+                        borderWidth: 4,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: "68%",
+                    plugins: {
+                        legend: {
+                            position: "bottom",
+                            labels: {
+                                color: textColor,
+                                padding: 18,
+                                usePointStyle: true,
+                                boxWidth: 10
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: "#101512",
+                            titleColor: accent,
+                            bodyColor: textColor,
+                            padding: 12
+                        }
+                    }
+                }
+            });
+        }
+
+        const manufacturerCanvas = document.getElementById("manufacturerChart");
+
+        if (manufacturerCanvas && manufacturerLabels.length > 0) {
+            new Chart(manufacturerCanvas, {
+                type: "bar",
+                data: {
+                    labels: manufacturerLabels,
+                    datasets: [{
+                        label: "Кількість моделей",
+                        data: manufacturerValues,
+                        backgroundColor: accent,
+                        hoverBackgroundColor: "#e0f5b2",
+                        borderRadius: 5,
+                        maxBarThickness: 38
+                    }]
+                },
+                options: {
+                    indexAxis: "y",
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: "#101512",
+                            titleColor: accent,
+                            bodyColor: textColor,
+                            padding: 12
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: mutedColor,
+                                precision: 0
+                            },
+                            grid: {
+                                color: gridColor
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: textColor
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        const availabilityCanvas = document.getElementById("availabilityChart");
+
+        if (availabilityCanvas) {
+            const available = Number("{{ available_drones }}");
+            const unavailable = Number("{{ unavailable_drones }}");
+
+            new Chart(availabilityCanvas, {
+                type: "doughnut",
+                data: {
+                    labels: ["Доступні", "Недоступні"],
+                    datasets: [{
+                        data: [available, unavailable],
+                        backgroundColor: [accent, "#526253"],
+                        borderColor: "#1a231c",
+                        borderWidth: 5,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: "72%",
+                    plugins: {
+                        legend: {
+                            position: "bottom",
+                            labels: {
+                                color: textColor,
+                                padding: 20,
+                                usePointStyle: true,
+                                boxWidth: 12
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: "#101512",
+                            titleColor: accent,
+                            bodyColor: textColor,
+                            padding: 12
+                        }
+                    }
+                }
+            });
+        }
+
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Django local database
+db.sqlite3
+db.sqlite3-journal
+
+# Uploaded media
+media/
+
+# Django logs
+*.log
+
+# PyCharm
+.idea/
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# Test and cache files
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Build files
+build/
+dist/
+*.egg-info/

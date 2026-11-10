@@ -1,0 +1,635 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Мої замовлення | KRYLA</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+        :root {
+            --bg: #101512;
+            --surface: #1a231c;
+            --border: #39483c;
+            --accent: #c6e38c;
+            --muted: #9baa9b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: #f4f1e8;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background: #171e19;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-brand {
+            color: var(--accent) !important;
+            font-weight: 900;
+            letter-spacing: 3px;
+        }
+
+        .navbar .nav-link {
+            color: #dce5d6;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar .nav-link.active {
+            color: var(--accent);
+        }
+
+        .accent {
+            color: var(--accent);
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .eyebrow {
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 3px;
+        }
+
+        .hero {
+            padding: 85px 0 70px;
+            background: linear-gradient(
+                135deg,
+                #293b2c,
+                #101512 75%
+            );
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            letter-spacing: -3px;
+            line-height: 1.05;
+        }
+
+        .hero-description {
+            max-width: 680px;
+            color: #c6d1c1;
+            line-height: 1.8;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 25px;
+            height: 100%;
+        }
+
+        .stat-number {
+            color: var(--accent);
+            font-size: clamp(26px, 4vw, 39px);
+            font-weight: 900;
+            overflow-wrap: anywhere;
+        }
+
+        .section-title {
+            font-size: clamp(25px, 4vw, 36px);
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .order-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            transition: border-color .2s, transform .2s;
+        }
+
+        .order-card:hover {
+            border-color: #6d8b60;
+            transform: translateY(-2px);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 18px;
+            padding: 25px 28px;
+            background: #202e23;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-id {
+            color: #f4f1e8;
+            font-size: 23px;
+            font-weight: 900;
+        }
+
+        .order-date {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 5px;
+            border: 1px solid #526a48;
+            background: #293c2b;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .status-processing {
+            color: #e8d29b;
+            background: #3b3526;
+            border-color: #71613e;
+        }
+
+        .status-shipped {
+            color: #b5d8f0;
+            background: #253544;
+            border-color: #4b6b81;
+        }
+
+        .status-completed {
+            color: #c6e38c;
+            background: #293c2b;
+            border-color: #526a48;
+        }
+
+        .status-cancelled {
+            color: #f0a9a9;
+            background: #3d2929;
+            border-color: #805050;
+        }
+
+        .order-body {
+            padding: 25px 28px;
+        }
+
+        .product-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .product-row:last-child {
+            border-bottom: none;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        .product-meta {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .product-price {
+            color: #e6eee0;
+            font-size: 17px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .order-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 24px 28px;
+            background: #19251c;
+            border-top: 1px solid var(--border);
+        }
+
+        .order-total {
+            color: var(--accent);
+            font-size: 29px;
+            font-weight: 900;
+        }
+
+        .btn-kryla {
+            display: inline-block;
+            background: var(--accent);
+            color: #101512;
+            border: none;
+            border-radius: 6px;
+            padding: 14px 22px;
+            font-size: 13px;
+            font-weight: 900;
+            text-decoration: none;
+            letter-spacing: .5px;
+            transition: background .2s, transform .2s;
+        }
+
+        .btn-kryla:hover {
+            background: #e0f5b2;
+            color: #101512;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-kryla {
+            display: inline-block;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: #dce5d6;
+            padding: 13px 22px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+            transition: color .2s, border-color .2s;
+        }
+
+        .btn-outline-kryla:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .empty-state {
+            background: #19221b;
+            border: 1px dashed #526452;
+            border-radius: 12px;
+            padding: 75px 25px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 65px;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        @media (max-width: 767px) {
+            .hero {
+                padding: 55px 0;
+            }
+
+            .order-header,
+            .order-body,
+            .order-footer {
+                padding: 20px;
+            }
+
+            .product-row {
+                align-items: flex-start;
+            }
+
+            .order-total {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container py-2">
+
+        <a class="navbar-brand" href="{% url 'drones:home' %}">
+            KRYLA / КРИЛА
+        </a>
+
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#ordersNavbar"
+            aria-controls="ordersNavbar"
+            aria-expanded="false"
+            aria-label="Відкрити меню"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="ordersNavbar">
+
+            <div class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+
+                <a class="nav-link" href="{% url 'drones:home' %}">
+                    Головна
+                </a>
+
+                <a class="nav-link" href="{% url 'drones:drone_list' %}">
+                    Каталог
+                </a>
+
+                <a class="nav-link" href="{% url 'drones:my_hangar' %}">
+                    Мій ангар
+                </a>
+
+                <a class="nav-link active" href="{% url 'drones:my_orders' %}">
+                    Мої замовлення
+                </a>
+
+                <span class="small accent">
+                    👤 {{ user.username }}
+                </span>
+
+                <form method="post" action="{% url 'drones:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-light btn-sm">
+                        Вийти
+                    </button>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+
+<header class="hero">
+    <div class="container">
+
+        <p class="eyebrow mb-3">
+            KRYLA / PURCHASE HISTORY / 006
+        </p>
+
+        <h1>
+            MY <span class="accent">ORDERS.</span>
+        </h1>
+
+        <p class="hero-description mt-4">
+            Історія твоїх замовлень у KRYLA.
+            Переглядай придбані дрони, статуси замовлень
+            та деталі кожної покупки.
+        </p>
+
+        <a href="{% url 'drones:drone_list' %}"
+           class="btn-kryla mt-3">
+            + НОВЕ ЗАМОВЛЕННЯ
+        </a>
+
+    </div>
+</header>
+
+<!-- MAIN CONTENT -->
+
+<main class="container py-5">
+
+    <!-- STATISTICS -->
+
+    <div class="row g-3 mb-5">
+
+        <div class="col-md-6">
+
+            <div class="stat-card">
+
+                <p class="eyebrow mb-2">
+                    TOTAL ORDERS
+                </p>
+
+                <div class="stat-number">
+                    {{ total_orders }}
+                </div>
+
+                <p class="muted mb-0">
+                    Всього оформлених замовлень
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="stat-card">
+
+                <p class="eyebrow mb-2">
+                    TOTAL ORDER VALUE / EUR
+                </p>
+
+                <div class="stat-number">
+                    €{{ total_spent }}
+                </div>
+
+                <p class="muted mb-0">
+                    Загальна вартість замовлень
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ORDERS -->
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+        <div>
+            <p class="eyebrow mb-2">
+                ORDER ARCHIVE
+            </p>
+
+            <h2 class="section-title mb-0">
+                Історія замовлень
+            </h2>
+        </div>
+
+        <span class="muted small">
+            {{ total_orders }} / RECORDS
+        </span>
+
+    </div>
+
+    {% if orders %}
+
+        {% for order in orders %}
+
+            <article class="order-card">
+
+                <!-- ORDER HEADER -->
+
+                <div class="order-header">
+
+                    <div>
+                        <p class="eyebrow mb-2">
+                            ORDER RECORD
+                        </p>
+
+                        <div class="order-id">
+                            ЗАМОВЛЕННЯ #{{ order.id }}
+                        </div>
+
+                        <div class="order-date">
+                            {{ order.created_at|date:"d.m.Y" }}
+                            / {{ order.created_at|date:"H:i" }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="status-badge
+                            {% if order.status == 'processing' %}status-processing{% endif %}
+                            {% if order.status == 'shipped' %}status-shipped{% endif %}
+                            {% if order.status == 'completed' %}status-completed{% endif %}
+                            {% if order.status == 'cancelled' %}status-cancelled{% endif %}
+                        ">
+                            {{ order.get_status_display|upper }}
+                        </span>
+                    </div>
+
+                </div>
+
+                <!-- PRODUCTS -->
+
+                <div class="order-body">
+
+                    <p class="eyebrow mb-3">
+                        ORDER CONTENTS
+                    </p>
+
+                    {% for item in order.items.all %}
+
+                        <div class="product-row">
+
+                            <div>
+                                <div class="product-name">
+                                    {{ item.drone_name }}
+                                </div>
+
+                                <div class="product-meta">
+                                    {{ item.manufacturer }}
+                                    / {{ item.quantity }} шт.
+                                    × €{{ item.price }}
+                                </div>
+                            </div>
+
+                            <div class="product-price">
+                                €{{ item.total_price }}
+                            </div>
+
+                        </div>
+
+                    {% empty %}
+
+                        <p class="muted">
+                            Товари для цього замовлення відсутні.
+                        </p>
+
+                    {% endfor %}
+
+                </div>
+
+                <!-- ORDER FOOTER -->
+
+                <div class="order-footer">
+
+                    <div>
+                        <p class="eyebrow mb-1">
+                            ORDER TOTAL / EUR
+                        </p>
+
+                        <div class="order-total">
+                            €{{ order.total_amount }}
+                        </div>
+                    </div>
+
+                    <a
+                        href="{% url 'drones:order_success' order.id %}"
+                        class="btn-outline-kryla"
+                    >
+                        ДЕТАЛІ ЗАМОВЛЕННЯ →
+                    </a>
+
+                </div>
+
+            </article>
+
+        {% endfor %}
+
+    {% else %}
+
+        <!-- EMPTY STATE -->
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                📦
+            </div>
+
+            <p class="eyebrow mb-3">
+                ORDER ARCHIVE / EMPTY
+            </p>
+
+            <h2 class="fw-bold mb-3">
+                Замовлень поки немає
+            </h2>
+
+            <p class="muted mb-4">
+                Твої майбутні покупки з'являться тут
+                після оформлення замовлення.
+            </p>
+
+            <a href="{% url 'drones:drone_list' %}"
+               class="btn-kryla">
+                ПЕРЕЙТИ ДО КАТАЛОГУ →
+            </a>
+
+        </div>
+
+    {% endif %}
+
+    <div class="mt-5">
+
+        <a href="{% url 'drones:my_hangar' %}"
+           class="btn-outline-kryla">
+            ← ПОВЕРНУТИСЯ ДО АНГАРА
+        </a>
+
+    </div>
+
+</main>
+
+<!-- FOOTER -->
+
+<footer class="py-4 mt-5">
+    <div class="container d-flex justify-content-between flex-wrap gap-3">
+        <span>© 2026 KRYLA — Ukrainian Drone Technology</span>
+        <span>MY ORDERS / PURCHASE SYSTEM</span>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

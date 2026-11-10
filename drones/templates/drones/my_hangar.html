@@ -1,0 +1,959 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мій ангар | KRYLA</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #101512;
+            --surface: #1a231c;
+            --border: #39483c;
+            --accent: #c6e38c;
+            --muted: #9baa9b;
+        }
+
+        body {
+            background: var(--bg);
+            color: #f4f1e8;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background: #171e19;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-brand {
+            color: var(--accent) !important;
+            font-weight: 900;
+            letter-spacing: 3px;
+        }
+
+        .navbar .nav-link {
+            color: #dce5d6;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar .nav-link.active {
+            color: var(--accent);
+        }
+
+        .hero {
+            padding: 85px 0 65px;
+            background: linear-gradient(135deg, #293b2c, #101512 75%);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            letter-spacing: -3px;
+        }
+
+        .accent {
+            color: var(--accent);
+        }
+
+        .eyebrow {
+            color: var(--accent);
+            font-size: 12px;
+            letter-spacing: 3px;
+            font-weight: 700;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .stat-number {
+            color: var(--accent);
+            font-size: 38px;
+            font-weight: 900;
+        }
+
+        .drone-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: transform .25s, border-color .25s;
+        }
+
+        .drone-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .drone-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .image-placeholder {
+            height: 220px;
+            background: linear-gradient(135deg, #344b36, #19251c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 65px;
+        }
+
+        .card-content {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .status-label {
+            display: inline-block;
+            color: var(--accent);
+            border: 1px solid var(--border);
+            background: #273729;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .notes {
+            background: #111a13;
+            border-left: 3px solid var(--accent);
+            padding: 14px;
+            border-radius: 3px;
+            color: #dce5d6;
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .btn-kryla {
+            background: var(--accent);
+            color: #101512;
+            border: none;
+            font-weight: 800;
+            padding: 12px 20px;
+            border-radius: 5px;
+        }
+
+        .btn-kryla:hover {
+            background: #e0f5b2;
+            color: #101512;
+        }
+
+        .card-actions {
+            margin-top: auto;
+            padding-top: 22px;
+        }
+
+        .empty-state {
+            border: 1px dashed #526452;
+            border-radius: 12px;
+            padding: 65px 25px;
+            text-align: center;
+            background: #19221b;
+        }
+
+        /* ==========================================
+           SHOPPING CART
+        ========================================== */
+
+        .cart-section {
+            margin-top: 85px;
+            padding-top: 55px;
+            border-top: 1px solid var(--border);
+        }
+
+        .cart-heading {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            letter-spacing: -2px;
+        }
+
+        .cart-count {
+            color: var(--accent);
+            background: #273729;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 9px 14px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .cart-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            padding: 23px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-image {
+            width: 125px;
+            height: 110px;
+            flex-shrink: 0;
+            object-fit: cover;
+            border-radius: 7px;
+            background: #293b2c;
+        }
+
+        .cart-image-placeholder {
+            width: 125px;
+            height: 110px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #293b2c;
+            border-radius: 7px;
+            font-size: 38px;
+        }
+
+        .cart-product-name {
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .cart-price {
+            color: var(--accent);
+            font-size: 23px;
+            font-weight: 900;
+        }
+
+        .cart-quantity {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #101512;
+            border: 1px solid var(--border);
+            padding: 5px;
+            border-radius: 5px;
+            font-weight: 700;
+        }
+
+        .quantity-btn {
+            width: 34px;
+            height: 34px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: #273729;
+            color: var(--accent);
+            font-size: 21px;
+            font-weight: 800;
+            line-height: 1;
+            transition: background .2s, color .2s;
+        }
+
+        .quantity-btn:hover {
+            background: var(--accent);
+            color: #101512;
+        }
+
+        .quantity-btn:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+        }
+
+        .quantity-number {
+            min-width: 22px;
+            text-align: center;
+        }
+
+        .cart-remove {
+            background: transparent;
+            color: #e7a3a3;
+            border: 1px solid #754444;
+            border-radius: 5px;
+            padding: 8px 13px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            transition: background .2s;
+        }
+
+        .cart-remove:hover {
+            background: #492626;
+            color: #ffffff;
+        }
+
+        .cart-summary {
+            background: #1e2b21;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .summary-total {
+            color: var(--accent);
+            font-size: 35px;
+            font-weight: 900;
+        }
+
+        .cart-empty {
+            padding: 65px 25px;
+            text-align: center;
+        }
+
+        .cart-empty-icon {
+            font-size: 58px;
+            margin-bottom: 20px;
+        }
+
+        .cart-notice {
+            background: #243126;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 14px;
+            color: #c6d1c1;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* ==========================================
+           CHECKOUT BUTTON
+        ========================================== */
+
+        .checkout-button {
+            display: block;
+            width: 100%;
+            padding: 17px 20px;
+            background: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            color: #101512;
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: .7px;
+            text-align: center;
+            text-decoration: none;
+            transition: background .2s, transform .2s;
+        }
+
+        .checkout-button:hover {
+            background: #e0f5b2;
+            color: #101512;
+            transform: translateY(-2px);
+        }
+
+        .checkout-button-disabled {
+            display: block;
+            width: 100%;
+            padding: 17px 20px;
+            background: #354238;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: #8a9b8c;
+            font-size: 14px;
+            font-weight: 900;
+            text-align: center;
+            cursor: not-allowed;
+        }
+
+        /* ==========================================
+           NEW: ORDER HISTORY BUTTON
+        ========================================== */
+
+        .orders-history-button {
+            display: block;
+            width: 100%;
+            padding: 15px 20px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--accent);
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: .7px;
+            text-align: center;
+            text-decoration: none;
+            transition: background .2s, border-color .2s;
+        }
+
+        .orders-history-button:hover {
+            background: #293b2c;
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        @media (max-width: 767px) {
+            .hero {
+                padding: 55px 0;
+            }
+
+            .cart-section {
+                margin-top: 60px;
+                padding-top: 40px;
+            }
+
+            .cart-item {
+                align-items: flex-start;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .cart-image,
+            .cart-image-placeholder {
+                width: 95px;
+                height: 95px;
+            }
+
+            .cart-summary {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container py-2">
+
+        <a class="navbar-brand" href="{% url 'drones:home' %}">
+            KRYLA / КРИЛА
+        </a>
+
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#hangarNavbar"
+                aria-controls="hangarNavbar"
+                aria-expanded="false"
+                aria-label="Відкрити меню">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="hangarNavbar">
+            <div class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+
+                <a class="nav-link" href="{% url 'drones:home' %}">
+                    Головна
+                </a>
+
+                <a class="nav-link" href="{% url 'drones:drone_list' %}">
+                    Каталог
+                </a>
+
+                <a class="nav-link active" href="{% url 'drones:my_hangar' %}">
+                    Мій ангар
+                </a>
+
+                <a class="nav-link" href="#shopping-cart">
+                    🛒 Кошик
+                </a>
+
+                <!-- NEW: ORDER HISTORY NAVIGATION -->
+
+                <a class="nav-link" href="{% url 'drones:my_orders' %}">
+                    Мої замовлення
+                </a>
+
+                <span class="small" style="color: #c6e38c;">
+                    👤 {{ user.username }}
+                </span>
+
+                <form method="post" action="{% url 'drones:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-light btn-sm">
+                        Вийти
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<header class="hero">
+    <div class="container">
+
+        <p class="eyebrow">KRYLA / PERSONAL COLLECTION / 003</p>
+
+        <h1>MY <span class="accent">HANGAR.</span></h1>
+
+        <p class="lead text-white-50 mt-3">
+            Твоя персональна колекція дронів.
+            Зберігай, організовуй та досліджуй технології польоту.
+        </p>
+
+        <div class="d-flex flex-wrap gap-3 mt-3">
+
+            <a href="{% url 'drones:drone_list' %}"
+               class="btn btn-kryla">
+                + ДОДАТИ ДРОН
+            </a>
+
+            <a href="#shopping-cart"
+               class="btn btn-outline-light px-4 py-3">
+                🛒 ПЕРЕГЛЯНУТИ КОШИК
+            </a>
+
+        </div>
+
+    </div>
+</header>
+
+<main class="container py-5">
+
+    <!-- ==========================================
+         EXISTING HANGAR STATISTICS
+    ========================================== -->
+
+    <div class="row g-3 mb-5">
+
+        <div class="col-md-4">
+            <div class="stat-card">
+                <p class="eyebrow mb-2">TOTAL AIRCRAFT</p>
+                <div class="stat-number">{{ items|length }}</div>
+                <p class="muted mb-0">Дронів у твоєму ангарі</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card">
+                <p class="eyebrow mb-2">ACCESS LEVEL</p>
+                <div class="stat-number">01</div>
+                <p class="muted mb-0">Особистий простір</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card">
+                <p class="eyebrow mb-2">SYSTEM STATUS</p>
+                <div class="stat-number">ACTIVE</div>
+                <p class="muted mb-0">Ангар готовий до роботи</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ==========================================
+         EXISTING PERSONAL COLLECTION
+    ========================================== -->
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <p class="eyebrow mb-2">YOUR AIRCRAFT</p>
+            <h2 class="fw-bold mb-0">Моя колекція</h2>
+        </div>
+    </div>
+
+    {% if items %}
+
+        <div class="row g-4">
+
+            {% for item in items %}
+
+                <div class="col-md-6 col-lg-4">
+                    <article class="drone-card">
+
+                        {% if item.drone.image %}
+                            <img src="{{ item.drone.image.url }}"
+                                 alt="{{ item.drone.name }}"
+                                 class="drone-image">
+                        {% else %}
+                            <div class="image-placeholder">🚁</div>
+                        {% endif %}
+
+                        <div class="card-content">
+
+                            <p class="eyebrow mb-2">
+                                {{ item.drone.category.name }}
+                            </p>
+
+                            <h3 class="fw-bold">
+                                {{ item.drone.name }}
+                            </h3>
+
+                            <p class="text-white-50">
+                                {{ item.drone.manufacturer }}
+                            </p>
+
+                            <div class="mb-3">
+                                <span class="status-label">
+                                    {{ item.get_status_display }}
+                                </span>
+                            </div>
+
+                            {% if item.notes %}
+                                <div class="notes mb-3">
+                                    <strong>NOTES /</strong>
+                                    <p class="mb-0 mt-2">
+                                        {{ item.notes|linebreaksbr }}
+                                    </p>
+                                </div>
+                            {% else %}
+                                <p class="muted small">
+                                    Особистих нотаток поки немає.
+                                </p>
+                            {% endif %}
+
+                            <div class="card-actions">
+
+                                <a href="{% url 'drones:edit_hangar_item' item.id %}"
+                                   class="btn btn-kryla w-100 mb-2">
+                                    ✎ EDIT AIRCRAFT
+                                </a>
+
+                                <form method="post"
+                                      action="{% url 'drones:delete_hangar_item' item.id %}"
+                                      onsubmit="return confirm('Видалити цей дрон з ангара?');">
+
+                                    {% csrf_token %}
+
+                                    <button type="submit"
+                                            class="btn btn-outline-danger w-100">
+                                        REMOVE FROM HANGAR
+                                    </button>
+                                </form>
+
+                            </div>
+
+                        </div>
+                    </article>
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div style="font-size: 65px;" class="mb-3">🚁</div>
+
+            <h2 class="fw-bold">
+                Твій ангар поки порожній
+            </h2>
+
+            <p class="muted mb-4">
+                Відкрий каталог та додай свій перший дрон.
+            </p>
+
+            <a href="{% url 'drones:drone_list' %}"
+               class="btn btn-kryla">
+                EXPLORE DRONES →
+            </a>
+
+        </div>
+
+    {% endif %}
+
+    <!-- ==========================================
+         SHOPPING CART
+    ========================================== -->
+
+    <section class="cart-section" id="shopping-cart">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+            <div>
+                <p class="eyebrow mb-2">
+                    KRYLA / PURCHASE SYSTEM
+                </p>
+
+                <h2 class="cart-heading mb-2">
+                    SHOPPING <span class="accent">CART.</span>
+                </h2>
+
+                <p class="muted mb-0">
+                    Обрані дрони для оформлення замовлення.
+                </p>
+            </div>
+
+            <span class="cart-count">
+                {{ cart_items|length|default:"0" }} / CART ITEMS
+            </span>
+
+        </div>
+
+        <div class="row g-4 align-items-start">
+
+            <div class="col-lg-8">
+
+                <div class="cart-panel">
+
+                    {% if cart_items %}
+
+                        {% for cart_item in cart_items %}
+
+                            <div class="cart-item">
+
+                                {% if cart_item.drone.image %}
+                                    <img src="{{ cart_item.drone.image.url }}"
+                                         alt="{{ cart_item.drone.name }}"
+                                         class="cart-image">
+                                {% else %}
+                                    <div class="cart-image-placeholder">
+                                        🚁
+                                    </div>
+                                {% endif %}
+
+                                <div class="flex-grow-1">
+
+                                    <p class="eyebrow mb-2">
+                                        {{ cart_item.drone.manufacturer }}
+                                    </p>
+
+                                    <h3 class="cart-product-name mb-2">
+                                        {{ cart_item.drone.name }}
+                                    </h3>
+
+                                    <p class="muted small mb-2">
+                                        Ціна за одиницю:
+                                        €{{ cart_item.drone.price }}
+                                    </p>
+
+                                    <div class="d-flex align-items-center flex-wrap gap-3 mt-3">
+
+                                        <div class="cart-quantity">
+
+                                            <form method="post"
+                                                  action="{% url 'drones:update_cart_item' cart_item.id %}">
+                                                {% csrf_token %}
+
+                                                <input type="hidden"
+                                                       name="action"
+                                                       value="decrease">
+
+                                                <button type="submit"
+                                                        class="quantity-btn"
+                                                        aria-label="Зменшити кількість">
+                                                    −
+                                                </button>
+                                            </form>
+
+                                            <span class="quantity-number">
+                                                {{ cart_item.quantity }}
+                                            </span>
+
+                                            <form method="post"
+                                                  action="{% url 'drones:update_cart_item' cart_item.id %}">
+                                                {% csrf_token %}
+
+                                                <input type="hidden"
+                                                       name="action"
+                                                       value="increase">
+
+                                                <button type="submit"
+                                                        class="quantity-btn"
+                                                        aria-label="Збільшити кількість"
+                                                        {% if not cart_item.drone.is_available %}disabled{% endif %}>
+                                                    +
+                                                </button>
+                                            </form>
+
+                                        </div>
+
+                                        <form method="post"
+                                              action="{% url 'drones:remove_cart_item' cart_item.id %}"
+                                              onsubmit="return confirm('Видалити цей дрон із кошика?');">
+
+                                            {% csrf_token %}
+
+                                            <button type="submit"
+                                                    class="cart-remove">
+                                                ✕ ВИДАЛИТИ
+                                            </button>
+                                        </form>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="text-lg-end">
+
+                                    <p class="muted small mb-1">
+                                        СУМА
+                                    </p>
+
+                                    <div class="cart-price">
+                                        €{{ cart_item.total_price }}
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <div class="cart-empty">
+
+                            <div class="cart-empty-icon">🛒</div>
+
+                            <p class="eyebrow">
+                                CART STATUS / EMPTY
+                            </p>
+
+                            <h3 class="fw-bold mb-3">
+                                Твій кошик поки порожній
+                            </h3>
+
+                            <p class="muted mb-4">
+                                Обери дрони з каталогу, щоб
+                                підготувати своє замовлення.
+                            </p>
+
+                            <a href="{% url 'drones:drone_list' %}"
+                               class="btn btn-kryla">
+                                ПЕРЕЙТИ ДО КАТАЛОГУ →
+                            </a>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <aside class="cart-summary">
+
+                    <p class="eyebrow mb-2">
+                        ORDER SUMMARY
+                    </p>
+
+                    <h3 class="fw-bold mb-4">
+                        Підсумок замовлення
+                    </h3>
+
+                    <div class="summary-row">
+                        <span class="muted">
+                            Товарів у кошику
+                        </span>
+
+                        <strong>
+                            {{ cart_quantity|default:"0" }}
+                        </strong>
+                    </div>
+
+                    <div class="summary-row">
+                        <span class="muted">
+                            Вартість товарів
+                        </span>
+
+                        <strong>
+                            €{{ cart_total|default:"0.00" }}
+                        </strong>
+                    </div>
+
+                    <div class="summary-row">
+                        <span class="muted">
+                            Доставка
+                        </span>
+
+                        <strong>
+                            Уточнюється
+                        </strong>
+                    </div>
+
+                    <p class="eyebrow mt-4 mb-1">
+                        TOTAL AMOUNT
+                    </p>
+
+                    <div class="summary-total mb-4">
+                        €{{ cart_total|default:"0.00" }}
+                    </div>
+
+                    <!-- ==================================
+                         CHECKOUT ACTION
+                    ================================== -->
+
+                    {% if cart_items %}
+
+                        <a href="{% url 'drones:checkout' %}"
+                           class="checkout-button mb-3">
+                            ОФОРМИТИ ЗАМОВЛЕННЯ →
+                        </a>
+
+                    {% else %}
+
+                        <div class="checkout-button-disabled mb-3">
+                            КОШИК ПОРОЖНІЙ
+                        </div>
+
+                    {% endif %}
+
+                    <!-- ==================================
+                         NEW: ORDER HISTORY ACTION
+                    ================================== -->
+
+                    <a href="{% url 'drones:my_orders' %}"
+                       class="orders-history-button mb-3">
+                        ІСТОРІЯ ЗАМОВЛЕНЬ →
+                    </a>
+
+                    <div class="cart-notice">
+                        🔒 Оформлення замовлень без онлайн-оплати.
+                        Дані замовлення зберігатимуться
+                        в системі KRYLA.
+                    </div>
+
+                </aside>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer class="py-4 mt-5">
+    <div class="container d-flex justify-content-between flex-wrap gap-3">
+        <span>© 2026 KRYLA — Ukrainian Drone Technology</span>
+        <span>PERSONAL HANGAR / SHOPPING CART</span>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

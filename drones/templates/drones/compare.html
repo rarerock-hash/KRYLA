@@ -1,0 +1,670 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Порівняння дронів | KRYLA</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #101512;
+            --surface: #1a231c;
+            --border: #39483c;
+            --accent: #c6e38c;
+            --muted: #9baa9b;
+            --text: #f4f1e8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background: #171e19;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-brand {
+            color: var(--accent) !important;
+            font-weight: 900;
+            letter-spacing: 3px;
+        }
+
+        .navbar .nav-link {
+            color: #dce5d6;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar .nav-link.active {
+            color: var(--accent);
+        }
+
+        .btn-kryla {
+            background: var(--accent);
+            color: #101512;
+            font-weight: 800;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 20px;
+        }
+
+        .btn-kryla:hover {
+            background: #e0f5b2;
+            color: #101512;
+        }
+
+        .page-header {
+            padding: 85px 0 65px;
+            background: linear-gradient(135deg, #253528, #101512 70%);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tagline {
+            color: var(--muted);
+            letter-spacing: 3px;
+            font-size: 12px;
+        }
+
+        .page-title {
+            font-size: clamp(2.8rem, 7vw, 6rem);
+            font-weight: 900;
+            letter-spacing: -3px;
+            line-height: 1.05;
+        }
+
+        .accent {
+            color: var(--accent);
+        }
+
+        .selection-panel {
+            background: #1b261e;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+        }
+
+        .form-label {
+            color: #dce5d6;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .form-select {
+            background-color: #101512;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 14px;
+        }
+
+        .form-select:focus {
+            background-color: #101512;
+            color: white;
+            border-color: var(--accent);
+            box-shadow: none;
+        }
+
+        .form-select option {
+            background: #101512;
+            color: white;
+        }
+
+        .comparison-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            height: 100%;
+            transition: transform .25s, border-color .25s;
+        }
+
+        .comparison-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .drone-photo {
+            width: 100%;
+            height: 240px;
+            object-fit: contain;
+            background: #243026;
+            padding: 14px;
+        }
+
+        .photo-placeholder {
+            height: 240px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 65px;
+            background: linear-gradient(135deg, #304431, #19251c);
+        }
+
+        .drone-info {
+            padding: 25px;
+        }
+
+        .drone-name {
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .manufacturer {
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+
+        .spec-row {
+            padding: 17px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .spec-label {
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 7px;
+        }
+
+        .spec-value {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .best-value {
+            color: var(--accent);
+        }
+
+        .best-tag {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 4px 7px;
+            background: rgba(198, 227, 140, .12);
+            color: var(--accent);
+            border: 1px solid rgba(198, 227, 140, .25);
+            border-radius: 4px;
+            font-size: 10px;
+            vertical-align: middle;
+            letter-spacing: 1px;
+        }
+
+        .drone-description {
+            color: #b4c0b2;
+            font-size: 14px;
+            line-height: 1.7;
+            min-height: 95px;
+        }
+
+        .empty-state {
+            padding: 85px 25px;
+            background: var(--surface);
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 22px;
+        }
+
+        .section-heading {
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .helper-text {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .selection-counter {
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        @media (max-width: 767px) {
+            .page-header {
+                padding: 55px 0;
+            }
+
+            .selection-panel {
+                padding: 20px;
+            }
+
+            .drone-photo,
+            .photo-placeholder {
+                height: 210px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container py-2">
+        <a class="navbar-brand" href="{% url 'drones:home' %}">
+            KRYLA / КРИЛА
+        </a>
+
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#compareNavbar"
+                aria-controls="compareNavbar"
+                aria-expanded="false"
+                aria-label="Відкрити меню">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="compareNavbar">
+            <div class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+                <a class="nav-link" href="{% url 'drones:home' %}">
+                    Головна
+                </a>
+
+                <a class="nav-link" href="{% url 'drones:drone_list' %}">
+                    Каталог
+                </a>
+
+                <a class="nav-link active" href="{% url 'drones:compare_drones' %}">
+                    Порівняння
+                </a>
+
+                <a class="nav-link" href="{% url 'drones:analytics' %}">
+                    Аналітика
+                </a>
+
+                <a class="nav-link" href="{% url 'drones:simulator' %}">
+                    🚁 Симулятор
+                </a>
+
+                {% if user.is_authenticated %}
+                    <a class="nav-link" href="{% url 'drones:my_hangar' %}">
+                        Мій ангар
+                    </a>
+
+                    <a class="nav-link" href="{% url 'drones:profile' %}">
+                        👤 Мій профіль
+                    </a>
+
+                    <form method="post" action="{% url 'drones:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="btn btn-outline-light btn-sm">
+                            Вийти
+                        </button>
+                    </form>
+                {% else %}
+                    <a class="nav-link" href="{% url 'drones:login' %}">
+                        Увійти
+                    </a>
+
+                    <a class="btn btn-kryla btn-sm"
+                       href="{% url 'drones:register' %}">
+                        Реєстрація
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<header class="page-header">
+    <div class="container">
+        <p class="tagline">KRYLA / AIRCRAFT COMPARISON / 004</p>
+
+        <h1 class="page-title">
+            COMPARE <span class="accent">AIRCRAFT.</span>
+        </h1>
+
+        <p class="lead text-white-50 mt-3">
+            Порівнюй характеристики цивільних дронів.
+            Знаходь оптимальну модель для своїх завдань.
+        </p>
+    </div>
+</header>
+
+<main class="container py-5">
+
+    <section class="selection-panel mb-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <p class="tagline mb-2">SELECT / COMPARE / DECIDE</p>
+                <h2 class="section-heading mb-0">Обери дрони</h2>
+            </div>
+
+            <span class="selection-counter" id="selectionCounter">
+                0 / 3 ОБРАНО
+            </span>
+        </div>
+
+        <form method="get"
+              action="{% url 'drones:compare_drones' %}"
+              id="comparisonForm">
+
+            <div class="row g-3">
+                <div class="col-lg-4">
+                    <label class="form-label" for="drone1">
+                        ДРОН 01
+                    </label>
+
+                    <select class="form-select drone-select"
+                            id="drone1"
+                            name="drone">
+                        <option value="">Оберіть модель</option>
+
+                        {% for drone in all_drones %}
+                            <option value="{{ drone.id }}"
+                                {% if selected_drones.0.id == drone.id %}selected{% endif %}>
+                                {{ drone.manufacturer }} — {{ drone.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-lg-4">
+                    <label class="form-label" for="drone2">
+                        ДРОН 02
+                    </label>
+
+                    <select class="form-select drone-select"
+                            id="drone2"
+                            name="drone">
+                        <option value="">Оберіть модель</option>
+
+                        {% for drone in all_drones %}
+                            <option value="{{ drone.id }}"
+                                {% if selected_drones.1.id == drone.id %}selected{% endif %}>
+                                {{ drone.manufacturer }} — {{ drone.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-lg-4">
+                    <label class="form-label" for="drone3">
+                        ДРОН 03 / НЕОБОВ'ЯЗКОВО
+                    </label>
+
+                    <select class="form-select drone-select"
+                            id="drone3"
+                            name="drone">
+                        <option value="">Не обрано</option>
+
+                        {% for drone in all_drones %}
+                            <option value="{{ drone.id }}"
+                                {% if selected_drones.2.id == drone.id %}selected{% endif %}>
+                                {{ drone.manufacturer }} — {{ drone.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
+                <button type="submit"
+                        class="btn btn-kryla"
+                        id="compareButton">
+                    ПОРІВНЯТИ ДРОНИ →
+                </button>
+
+                <a href="{% url 'drones:compare_drones' %}"
+                   class="btn btn-outline-light px-4 py-3">
+                    СКИНУТИ
+                </a>
+
+                <span class="helper-text" id="selectionHint">
+                    Обери щонайменше дві різні моделі.
+                </span>
+            </div>
+        </form>
+    </section>
+
+    {% if comparison_ready %}
+        <section>
+            <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+                <div>
+                    <p class="tagline mb-2">TECHNICAL SPECIFICATIONS</p>
+                    <h2 class="section-heading mb-0">
+                        Результати порівняння
+                    </h2>
+                </div>
+
+                <span class="selection-counter">
+                    {{ selected_drones|length }} AIRCRAFT SELECTED
+                </span>
+            </div>
+
+            <div class="row g-4">
+                {% for drone in selected_drones %}
+                    <div class="col-lg-4 col-md-6">
+                        <article class="comparison-card">
+
+                            {% if drone.image %}
+                                <img src="{{ drone.image.url }}"
+                                     alt="{{ drone.name }}"
+                                     class="drone-photo">
+                            {% else %}
+                                <div class="photo-placeholder">🚁</div>
+                            {% endif %}
+
+                            <div class="drone-info">
+                                <p class="tagline mb-2">
+                                    {{ drone.category.name }}
+                                </p>
+
+                                <h3 class="drone-name">
+                                    {{ drone.name }}
+                                </h3>
+
+                                <p class="manufacturer">
+                                    {{ drone.manufacturer }}
+                                </p>
+
+                                <div class="spec-row">
+                                    <p class="spec-label">Ціна</p>
+
+                                    <div class="spec-value
+                                        {% if drone.price == best_price %}best-value{% endif %}">
+                                        €{{ drone.price }}
+
+                                        {% if drone.price == best_price %}
+                                            <span class="best-tag">BEST PRICE</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="spec-row">
+                                    <p class="spec-label">Час польоту</p>
+
+                                    <div class="spec-value
+                                        {% if drone.flight_time != None and drone.flight_time == best_flight_time %}best-value{% endif %}">
+                                        {% if drone.flight_time != None %}
+                                            {{ drone.flight_time }} хв
+
+                                            {% if drone.flight_time == best_flight_time %}
+                                                <span class="best-tag">BEST TIME</span>
+                                            {% endif %}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="spec-row">
+                                    <p class="spec-label">Дальність польоту</p>
+
+                                    <div class="spec-value
+                                        {% if drone.range_km != None and drone.range_km == best_range %}best-value{% endif %}">
+                                        {% if drone.range_km != None %}
+                                            {{ drone.range_km }} км
+
+                                            {% if drone.range_km == best_range %}
+                                                <span class="best-tag">BEST RANGE</span>
+                                            {% endif %}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="spec-row">
+                                    <p class="spec-label">Наявність</p>
+
+                                    {% if drone.is_available %}
+                                        <span class="badge bg-success">
+                                            В наявності
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            Немає в наявності
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mt-4">
+                                    <p class="spec-label">Опис моделі</p>
+                                    <p class="drone-description">
+                                        {{ drone.description }}
+                                    </p>
+                                </div>
+
+                                {% if user.is_authenticated %}
+                                    <form method="post"
+                                          action="{% url 'drones:add_to_hangar' drone.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                                class="btn btn-kryla w-100 mt-3">
+                                            + ДОДАТИ ДО АНГАРА
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <a href="{% url 'drones:login' %}"
+                                       class="btn btn-outline-light w-100 mt-3">
+                                        УВІЙТИ, ЩОБ ЗБЕРЕГТИ
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </article>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% else %}
+        <section class="empty-state">
+            <div class="empty-icon">⚖️</div>
+
+            <p class="tagline">COMPARISON SYSTEM / READY</p>
+
+            <h2 class="section-heading mb-3">
+                Готовий порівняти дрони?
+            </h2>
+
+            <p class="text-white-50 mb-4">
+                Обери дві або три моделі вище, щоб побачити
+                їхні характеристики поруч.
+            </p>
+
+            <a href="{% url 'drones:drone_list' %}"
+               class="btn btn-outline-light">
+                ПЕРЕГЛЯНУТИ КАТАЛОГ →
+            </a>
+        </section>
+    {% endif %}
+
+</main>
+
+<footer class="py-4 mt-5">
+    <div class="container d-flex justify-content-between flex-wrap gap-3">
+        <span>© 2026 KRYLA — Ukrainian Drone Technology</span>
+        <span>COMPARISON SYSTEM / EDUCATIONAL PROJECT</span>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const selects = Array.from(
+        document.querySelectorAll(".drone-select")
+    );
+
+    const counter = document.getElementById("selectionCounter");
+    const hint = document.getElementById("selectionHint");
+    const button = document.getElementById("compareButton");
+    const form = document.getElementById("comparisonForm");
+
+    function updateSelection() {
+        const values = selects
+            .map(select => select.value)
+            .filter(Boolean);
+
+        const uniqueValues = new Set(values);
+        const hasDuplicates = values.length !== uniqueValues.size;
+
+        counter.textContent = `${uniqueValues.size} / 3 ОБРАНО`;
+
+        if (hasDuplicates) {
+            hint.textContent = "Оберіть різні моделі дронів.";
+            hint.style.color = "#ff9999";
+            button.disabled = true;
+            return;
+        }
+
+        if (uniqueValues.size < 2) {
+            hint.textContent = "Обери щонайменше дві різні моделі.";
+            hint.style.color = "#9baa9b";
+            button.disabled = true;
+            return;
+        }
+
+        hint.textContent = "Готово! Можна порівнювати.";
+        hint.style.color = "#c6e38c";
+        button.disabled = false;
+    }
+
+    selects.forEach(select => {
+        select.addEventListener("change", updateSelection);
+    });
+
+    form.addEventListener("submit", event => {
+        const selected = selects
+            .map(select => select.value)
+            .filter(Boolean);
+
+        if (
+            selected.length < 2 ||
+            selected.length !== new Set(selected).size
+        ) {
+            event.preventDefault();
+        }
+    });
+
+    updateSelection();
+</script>
+
+</body>
+</html>
